@@ -118,7 +118,11 @@
                             </div>
                         </div>
                     </form> --}}
+
                     <h3>Data Gudang</h3>
+
+                    <h3>Data Produk</h3>
+
 
                     <!-- Topbar Navbar -->
                     <ul class="navbar-nav ml-auto">
@@ -193,8 +197,13 @@
                 @if (session('success'))
                     <div class="alert alert-success">{{ session('success') }}</div>
                 @endif
+<<<<<<< HEAD
                 @if (session('destroy'))
                 <div class="alert alert-danger">{{ session('destroy') }}</div>
+=======
+                @if (session('delete'))
+                <div class="alert alert-danger">{{ session('delete') }}</div>
+>>>>>>> 41a3d1c28cbbb6acb7860ed9bdf8c1e730385982
 
                 @endif
 
@@ -238,12 +247,17 @@
 </td>
 
                             <td>
+<<<<<<< HEAD
                                 <a href="{{route('gudang.update', [$list->id])}}" class="btn btn-primary">Edit</a>
                                 <form action="{{ route('gudang.destroy', [$list->id]) }}" method="POST" onsubmit="return(confirm('Yakin Ingin Hapus Data ?'))">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-danger">Delete</button>
                                 </form>
+=======
+                                <a href="" class="btn btn-primary">Edit</a>
+                                <a href="" class="btn btn-danger">Delete</a>
+>>>>>>> 41a3d1c28cbbb6acb7860ed9bdf8c1e730385982
                             </td>
                         </tr>
                         @endforeach

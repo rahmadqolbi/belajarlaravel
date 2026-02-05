@@ -80,6 +80,8 @@ Route::delete('/supplier/{id}', [SupplierController::class, 'destroy'])->name('s
 Route::get('/gudang', [GudangController::class, 'index'])->name('gudang');
 Route::get('/gudang/add', [GudangController::class, 'create'])->name('gudang.add');
 Route::post('/gudang', [GudangController::class, 'store'])->name('gudang.post');
+
 Route::get('/gudang/{id}', [GudangController::class, 'show'])->name('gudang.update');
 Route::put('/gudang/{id}', [GudangController::class, 'update'])->name('gudang.update');
 Route::delete('/gudang/{id}', [GudangController::class, 'destroy'])->name('gudang.destroy');
+
