@@ -1,9 +1,12 @@
 <?php
 
 use App\Http\Controllers\Aktifitas\AktifitasController;
+use App\Http\Controllers\BarangMasukController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GudangController;
 use App\Http\Controllers\Halo\HaloController;
 use App\Http\Controllers\KategoriController;
+use App\Http\Controllers\OutletController;
 use App\Http\Controllers\ProdukController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\Todo\TodoController;
@@ -15,13 +18,19 @@ use Illuminate\Support\Facades\Route;
 // });
 
 
-// Route::get('/', function(){
-//     return view('user.index');
-// });
+Route::get('/', function(){
+    return view('dashboard.index');
+});
 // Route::get('/',[HomeController::class, 'index']);
 // Route::get('/halo', function(){
 //     return view('coba.halo');
 // });
+
+// Route::get('/dashboard', function () {
+//     return view('dashboard');
+// })->name('dashboard');
+
+Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 Route::get('/halo', [HaloController::class, 'index']);
 Route::get('/todo', [TodoController::class, 'index'])->name('todo');
 Route::post('/todo', [TodoController::class, 'store'])->name('todo.post');
@@ -80,8 +89,21 @@ Route::delete('/supplier/{id}', [SupplierController::class, 'destroy'])->name('s
 Route::get('/gudang', [GudangController::class, 'index'])->name('gudang');
 Route::get('/gudang/add', [GudangController::class, 'create'])->name('gudang.add');
 Route::post('/gudang', [GudangController::class, 'store'])->name('gudang.post');
-
 Route::get('/gudang/{id}', [GudangController::class, 'show'])->name('gudang.update');
 Route::put('/gudang/{id}', [GudangController::class, 'update'])->name('gudang.update');
 Route::delete('/gudang/{id}', [GudangController::class, 'destroy'])->name('gudang.destroy');
+
+Route::get('/outlet', [OutletController::class, 'index'])->name('outlet');
+Route::get('/outlet/add', [OutletController::class, 'create'])->name('outlet.add');
+Route::post('/outlet', [OutletController::class, 'store'])->name('outlet.post');
+Route::get('/outlet/{id}', [OutletController::class, 'show'])->name('outlet.update');
+Route::put('/outlet/{id}', [OutletController::class, 'update'])->name('outlet.update');
+Route::delete('/outlet/{id}', [OutletController::class, 'destroy'])->name('outlet.destroy');
+
+Route::get('/barangmasuk', [BarangMasukController::class, 'index'])->name('barangmasuk');
+Route::get('/barangmasuk/add', [BarangMasukController::class, 'create'])->name('barangmasuk.add');
+Route::post('/barangmasuk', [BarangMasukController::class, 'store'])->name('barangmasuk.post');
+Route::get('/barangmasuk/{id}', [BarangMasukController::class, 'show'])->name('barangmasuk.update');
+Route::put('/barangmasuk/{id}', [BarangMasukController::class, 'update'])->name('barangmasuk.update');
+Route::delete('/barangmasuk/{id}', [BarangMasukController::class, 'destroy'])->name('barangmasuk.destroy');
 

@@ -15,4 +15,7 @@ class Gudang extends Model
         'telepon',
         'status'
     ];
+    public function tujuan(){
+        return $this->morphMany(BarangMasuk::class, 'gudang_id');
+    }
 }

@@ -23,7 +23,8 @@ class UpdateSupplierRequest extends FormRequest
     protected function prepareForValidation()
     {
         $this->merge([
-            'nama_supplier' => strtoupper(trim($this->nama_supplier))
+            'nama_supplier' => strtoupper(trim($this->nama_supplier)),
+            'alamat' => strtoupper(trim($this->alamat))
         ]);
     }
     public function rules(): array

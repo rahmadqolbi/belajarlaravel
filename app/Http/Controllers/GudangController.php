@@ -6,10 +6,8 @@ use App\Http\Requests\StoreGudangRequest;
 use App\Models\Gudang;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
-<<<<<<< HEAD
 use App\Http\Requests\UpdateGudangRequest;
-=======
->>>>>>> 41a3d1c28cbbb6acb7860ed9bdf8c1e730385982
+use Illuminate\Support\Str;
 
 
 class GudangController extends Controller
@@ -57,12 +55,9 @@ class GudangController extends Controller
      */
     public function show(string $id)
     {
-<<<<<<< HEAD
         $data = Gudang::findOrFail($id);
         return view('gudang.update', compact('data'));
-=======
         //
->>>>>>> 41a3d1c28cbbb6acb7860ed9bdf8c1e730385982
     }
 
     /**
@@ -76,7 +71,6 @@ class GudangController extends Controller
     /**
      * Update the specified resource in storage.
      */
-<<<<<<< HEAD
     public function update(UpdateGudangRequest $request, string $id)
     {
         $data = ([
@@ -89,23 +83,13 @@ class GudangController extends Controller
         ]);
         Gudang::where('id', $id)->update($data);
         return redirect()->route('gudang')->with('success', 'Data Berhasil Di Edit');
-=======
-    public function update(Request $request, string $id)
-    {
-        //
->>>>>>> 41a3d1c28cbbb6acb7860ed9bdf8c1e730385982
     }
-
     /**
      * Remove the specified resource from storage.
      */
     public function destroy(string $id)
     {
-<<<<<<< HEAD
         Gudang::where('id', $id)->delete();
         return redirect()->route('gudang')->with('destroy', 'Data Berhasil DiHapus');
-=======
-        //
->>>>>>> 41a3d1c28cbbb6acb7860ed9bdf8c1e730385982
     }
 }

@@ -22,10 +22,7 @@ class StoreGudangRequest extends FormRequest
     protected function prepareForValidation()
     {
         $this->merge([
-<<<<<<< HEAD
              'kode_gudang' => strtoupper(trim($this->kode_gudang)),
-=======
->>>>>>> 41a3d1c28cbbb6acb7860ed9bdf8c1e730385982
             'nama_gudang' => strtoupper(trim($this->nama_gudang)),
             'alamat' => strtoupper(trim($this->alamat)),
             'penanggung_jawab' => strtoupper(trim($this->penanggung_jawab)),
@@ -34,6 +31,7 @@ class StoreGudangRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'kode_gudang' => 'required',
             'nama_gudang' => 'required',
             'alamat' => 'required',
             'penanggung_jawab' => 'required',

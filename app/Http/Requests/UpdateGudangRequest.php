@@ -32,6 +32,7 @@ class UpdateGudangRequest extends FormRequest
     {
         $id = $this->route('id');
         return [
+            'kode_gudang' => "required|unique:gudang,kode_gudang,$id",
             'nama_gudang' => "required|unique:gudang,nama_gudang,$id",
             'alamat' => 'required',
             'penanggung_jawab' => 'required',
