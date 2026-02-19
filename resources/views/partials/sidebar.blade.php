@@ -52,12 +52,12 @@
     </a>
 </li>
 
-<li class="nav-item {{ request()->routeIs('gudang') ? 'active' : '' }}">
+{{-- <li class="nav-item {{ request()->routeIs('gudang') ? 'active' : '' }}">
     <a class="nav-link" href="{{ route('gudang') }}">
         <i class="fas fa-fw fa-table"></i>
         <span>Gudang</span>
     </a>
-</li>
+</li> --}}
 
 <li class="nav-item {{ request()->routeIs('outlet') ? 'active' : '' }}">
     <a class="nav-link" href="{{ route('outlet') }}">
@@ -70,6 +70,12 @@
     <a class="nav-link" href="{{ route('barangmasuk') }}">
         <i class="fas fa-fw fa-table"></i>
         <span>Barang Masuk</span>
+    </a>
+</li>
+<li class="nav-item {{ request()->routeIs('penjualan') ? 'active' : '' }}">
+    <a class="nav-link" href="{{ route('penjualan') }}">
+        <i class="fas fa-fw fa-table"></i>
+        <span>Penjualan</span>
     </a>
 </li>
 

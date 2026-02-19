@@ -13,7 +13,8 @@ class BarangMasuk extends Model
         'tujuan_type',
         'tujuan_id',
         'no_dokumen',
-        'keterangan'
+        'keterangan',
+        'status'
     ];
     protected $casts = [
     'tanggal' => 'datetime',
@@ -21,6 +22,10 @@ class BarangMasuk extends Model
      public function supplier()
     {
         return $this->belongsTo(Supplier::class);
+    }
+    public function details()
+    {
+        return $this->belongsTo(BarangMasukDetail::class);
     }
 
     public function tujuan()
@@ -49,5 +54,6 @@ class BarangMasuk extends Model
         $this->tujuan_type = $map[$type];
         $this->tujuan_id   = $id;
     }
+
 
 }

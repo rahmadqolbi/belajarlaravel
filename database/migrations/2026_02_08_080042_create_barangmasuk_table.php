@@ -11,22 +11,37 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('barangmasuk', function (Blueprint $table) {
-    $table->id();
-    $table->date('tanggal');
-    // kolom FK dibuat manual
-    $table->unsignedBigInteger('supplier_id');
-    $table->unsignedBigInteger('tujuan_id')->nullable();
-    $table->string('tujuan_type')->nullable();
+      Schema::create('barangmasuk', function (Blueprint $table) {
+            // === IDENTITAS ===
+            $table->id();
+            $table->date('tanggal');
 
-    $table->string('no_dokumen')->nullable();
-    $table->text('keterangan')->nullable();
+            // === RELASI ===
+            $table->unsignedBigInteger('supplier_id');
+            $table->unsignedBigInteger('tujuan_id')->nullable();
+            $table->string('tujuan_type')->nullable();
 
-    $table->timestamps();
+            // === INFORMASI DOKUMEN ===
+            $table->string('no_dokumen')->nullable()->unique();
+            $table->text('keterangan')->nullable();
 
-    // FK ditulis manual (AMAN UNTUK SQLITE)
-    $table->foreign('supplier_id')->references('id')->on('supplier');
-});
+            // === STATUS (INI SAJA YANG PERLU DITAMBAH) ===
+            $table->enum('status', ['DRAFT', 'APPROVED'])->default('DRAFT');
+            // DRAFT   = Bisa edit/hapus, stok belum masuk
+            // APPROVED = Stok sudah masuk, tidak bisa edit sembarangan
+
+            // === DEFAULT LARAVEL ===
+            $table->timestamps();
+
+            // === INDEX ===
+            $table->index(['tanggal', 'status']);
+
+            // === FOREIGN KEY ===
+            $table->foreign('supplier_id')
+                  ->references('id')
+                  ->on('supplier')
+                  ->onDelete('restrict');
+        });
 
     }
 

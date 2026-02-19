@@ -1,34 +1,35 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Aktifitas\AktifitasController;
 use App\Http\Controllers\BarangMasukController;
-use App\Http\Controllers\BarangMasukDetailController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GudangController;
 use App\Http\Controllers\Halo\HaloController;
 use App\Http\Controllers\KategoriController;
 use App\Http\Controllers\OutletController;
-use App\Http\Controllers\PenjualanController;
 use App\Http\Controllers\ProdukController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\Todo\TodoController;
-// use App\Models\Supplier;
+use App\Models\Supplier;
+use Illuminate\Support\Facades\Route;
+// use App\Http\Controllers\HomeController;
+// Route::get('a/', function () {
+//     return view('welcome');
+// });
 
 
-Route::get('/', function () {
-    return view('auth.login');
+Route::get('/', function(){
+    return view('dashboard.index');
 });
+// Route::get('/',[HomeController::class, 'index']);
+// Route::get('/halo', function(){
+//     return view('coba.halo');
+// });
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+// Route::get('/dashboard', function () {
+//     return view('dashboard');
+// })->name('dashboard');
 
-Route::middleware('auth')->group(function () {
-Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 Route::get('/halo', [HaloController::class, 'index']);
 Route::get('/todo', [TodoController::class, 'index'])->name('todo');
@@ -53,6 +54,10 @@ Route::put('/aktifitas/{id}', [AktifitasController::class, 'update'])->name('akt
 
 // delete data
 Route::delete('/aktifitas/{id}', [AktifitasController::class, 'destroy'])->name('aktifitas.destroy');
+
+
+
+
 //menu kategori
 Route::get('/kategori', [KategoriController::class, 'index'])->name('kategori');
 //menu add kategori
@@ -101,14 +106,4 @@ Route::post('/barangmasuk', [BarangMasukController::class, 'store'])->name('bara
 Route::get('/barangmasuk/{id}', [BarangMasukController::class, 'show'])->name('barangmasuk.update');
 Route::put('/barangmasuk/{id}', [BarangMasukController::class, 'update'])->name('barangmasuk.update');
 Route::delete('/barangmasuk/{id}', [BarangMasukController::class, 'destroy'])->name('barangmasuk.destroy');
-});
-Route::get('/barangmasukdetail', [BarangMasukDetailController::class, 'index'])->name('barangmasukdetail');
-
-
-Route::get('/penjualan', [PenjualanController::class, 'index'])->name('penjualan');
-Route::get('/penjualan/add', [PenjualanController::class, 'create'])->name('penjualan.add');
-Route::post('/penjualan', [PenjualanController::class, 'store'])->name('penjualan.add');
-require __DIR__.'/auth.php';
-
-
 

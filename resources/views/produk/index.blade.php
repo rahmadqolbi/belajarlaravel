@@ -7,7 +7,14 @@
 @if(session('destroy'))
 <div class="alert alert-danger">{{ session('destroy') }}</div>
 @endif
-                <table class="table table-hover width="100%" cellspacing="0"">
+@if (session('qty'))
+<div class="alert alert-danger">{{ sesstion('qty') }}</div>
+
+@endif
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+             <table class="table table-hover width="100%" cellspacing="0"">
                     <thead>
                         <tr>
                             <th>No</th>
@@ -46,12 +53,14 @@
                         @endforeach
 
                     </tbody>
-                    <tbody>
-                        <tr>
-                            <td></td>
-                        </tr>
-                    </tbody>
                 </table>
                 <a href="{{ route('produk.add') }}" class="btn btn-primary">Tambah</a>
-              {{ $data->appends(request()->query())->links() }}
+
+                <div class="d-flex justify-content-end">
+                     {{ $data->appends(request()->query())->links() }}
+
+                </div>
+        </div>
+    </div>
+
 @endsection

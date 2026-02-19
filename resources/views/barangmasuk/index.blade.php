@@ -14,24 +14,41 @@
 <table class="table table-bordered">
     <thead>
         <tr>
-            <th>No</th>
+            <th class="text-center">No</th>
             <th>Tanggal</th>
             <th>Supplier</th>
             <th>Tujuan</th>
             <th>No. Dokumen</th>
             <th>Keterangan</th>
+            <th>Status</th>
             <th colspan="3">Aksi</th>
     </thead>
     <tbody>
             @foreach ($data as $list)
 
         <tr>
-            <td>{{ $data->firstItem() + $loop->index }}</td>
+            <td class="text-center">{{ $data->firstItem() + $loop->index.'.' }}</td>
            <td>{{ $list->tanggal->timezone('Asia/Jakarta')->format('d-M-Y') }}</td>
             <td>{{ $list->supplier->nama_supplier }}</td>
-             <td>{{ $list->tujuan->nama_gudang ?? $list->tujuan->nama_outlet }}</td>
+       <td>{{ $list->tujuan?->nama_gudang ?? $list->tujuan?->nama_outlet }}</td>
+
             <td>{{ $list->no_dokumen }}</td>
             <td>{{ $list->keterangan }}</td>
+            <td>
+                        <!-- Badge status dengan warna berbeda -->
+                        @if($list->status == 'DRAFT')
+                            <span class="badge bg-warning text-dark">
+                                <i class="fas fa-pencil-alt"></i> DRAFT
+                            </span>
+                            <br><small class="text-muted">Menunggu pengecekan</small>
+                        @elseif($list->status == 'APPROVED')
+                            <span class="badge bg-success text-light">
+                                <i class="fas fa-check"></i> APPROVED
+                            </span>
+                            <br><small class="text-muted">Stok sudah masuk</small>
+                        @endif
+
+                    </td>
             <td>
                 <a href="" class="btn btn-sm btn-info">Show</a>
                 <a href="{{ route('barangmasuk.update', $list->id) }}" class="btn btn-sm btn-primary">Edit</a>

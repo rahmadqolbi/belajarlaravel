@@ -28,7 +28,7 @@
     <tbody>
         @foreach($data as $list)
         <tr>
-            <td>{{ $loop->iteration }}</td>
+            <td class="text-center">{{ $loop->iteration.'.' }}</td>
             <td>{{ $list->kode_gudang }}</td>
             <td>{{ $list->nama_gudang }}</td>
             <td>{{ $list->alamat }}</td>
