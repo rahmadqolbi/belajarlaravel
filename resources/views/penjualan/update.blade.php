@@ -1,10 +1,10 @@
 @extends('layouts.app')
-@section('title', 'Form Penjualan')
+@section('title', 'Form Edit Penjualan')
 
 @section('content')
-<form action="{{ route('penjualan') }}" method="POST">
+<form action="{{ route('penjualan.update', $penjualan->id) }}" method="POST">
     @csrf
-    @method('POST')
+    @method('PUT')
 
 
 <div class="container-fluid">
@@ -12,7 +12,7 @@
 
     <div class="card shadow-sm">
         <div class="card-header bg-primary text-white">
-            <h5 class="mb-0">Form Penjualan</h5>
+            <h5 class="mb-0">Form Edit Penjualan</h5>
         </div>
 
         <div class="card-body">
@@ -22,20 +22,21 @@
 
                 <div class="col-md-4">
                     <label>Kode Transaksi</label>
-                    <input type="text" class="form-control" name="kode" value="{{ $kode ?? '' }}" readonly>
+                    <input type="text" class="form-control" name="kode" value="{{ $penjualan->kode}}" readonly>
                 </div>
 
                 <div class="col-md-4">
                     <label>Tanggal</label>
-                    <input type="date" class="form-control" value="{{ date('Y-m-d') }}" name="tanggal">
+                    <input type="date" class="form-control" value="{{ $penjualan->tanggal }}" name="tanggal">
                 </div>
 
                 <div class="col-md-4">
                     <label>Metode Pembayaran</label>
                     <select class="form-control" name="metode_pembayaran">
-                        <option value="CASH">CASH</option>
-                        <option value="TRANSFER">TRANSFER</option>
-                        <option value="QRIS">QRIS</option>
+
+                        <option value="CASH"{{ old('metode_pembayaran', $penjualan->metode_pembayaran) == 'CASH' ? 'selected' : ''}}>CASH</option>
+                        <option value="TRANSFER"{{ old('metode_pembayaran', $penjualan->metode_pembayaran) == 'TRANSFER' ? 'selected' : ''}}>TRANSFER</option>
+                        <option value="QRIS"{{ old('metode_pembayaran', $penjualan->metode_pembayaran) == 'QRIS' ? 'selected' : ''}}>QRIS</option>
                     </select>
                 </div>
 
@@ -61,64 +62,84 @@
                       <tbody id="tbody">
 
 @if(old('produk_id'))
+    {{-- Jika ada input lama (validasi gagal) --}}
     @foreach(old('produk_id') as $index => $oldProduk)
+        <tr>
+            <td>
+                <select name="produk_id[]"
+                    class="form-control product-select @error('produk_id.' . $index) is-invalid @enderror">
 
-    <tr>
-        <td>
-            <select name="produk_id[]"
-                class="form-control product-select @error('produk_id.' . $index) is-invalid @enderror">
+                    <option value="">-- Pilih Produk --</option>
 
-                <option value="">-- Pilih Produk --</option>
-
-                @foreach ($produk as $pro)
-                    <option value="{{ $pro->id }}"
-                        data-harga="{{ $pro->harga }}"
-                        {{ $oldProduk == $pro->id ? 'selected' : '' }}>
-                        {{ $pro->nama_barang }}
-                    </option>
-                @endforeach
-            </select>
-
-            @error('produk_id.' . $index)
-                <div class="text-danger">{{ $message }}</div>
-            @enderror
-        </td>
-
-        <td>
-            <input type="number"
-                name="qty[]"
-                class="form-control text-end @error('qty.' . $index) is-invalid @enderror"
-                value="{{ old('qty.' . $index) }}">
-
-            @error('qty.' . $index)
-                <div class="text-danger">{{ $message }}</div>
-            @enderror
-        </td>
-
-        <td>
-            <input type="text"
-                name="harga[]"
-                class="form-control text-end"
-                value="{{ old('harga.' . $index) }}"
-                readonly>
-        </td>
-
-        <td>
-            <input type="text"
-                name="subtotal[]"
-                class="form-control text-end bg-light"
-                value="{{ old('subtotal.' . $index) }}"
-                readonly>
-        </td>
-        <td class="text-center">
-            <button type="button" class="btn btn-danger btn-sm btn-delete">X</button>
-        </td>
-    </tr>
-
+                    @foreach ($produk as $pro)
+                        <option value="{{ $pro->id }}"
+                            data-harga="{{ $pro->harga }}"
+                            {{ $oldProduk == $pro->id ? 'selected' : '' }}>
+                            {{ $pro->nama_barang }}
+                        </option>
+                    @endforeach
+                </select>
+                @error('produk_id.' . $index)
+                    <div class="text-danger">{{ $message }}</div>
+                @enderror
+            </td>
+            <td>
+               <input type="number" name="qty[]" class="form-control text-end qty"
+       value="{{ old('qty.' . $index, $penjualan_detail->qty) }}">
+            </td>
+            <td>
+                <input type="text" name="harga[]" class="form-control text-end harga"
+       value="{{ $penjualan_detail->harga }}"
+       data-value="{{ $penjualan_detail->harga }}" readonly>
+            </td>
+          <td>
+    <input type="text"
+           name="subtotal[]"
+           class="form-control text-end bg-light subtotal"
+           value="{{ old('subtotal.' . $index, number_format($penjualan_detail->subtotal, 0, ',', '.')) }}"
+           readonly>
+</td>
+            <td class="text-center">
+                <button type="button" class="btn btn-danger btn-sm btn-delete">X</button>
+            </td>
+        </tr>
     @endforeach
+
+@elseif(isset($detailPenjualan) && $detailPenjualan->count() > 0)
+    {{-- Tampilkan detail penjualan dari database --}}
+    @foreach($detailPenjualan as $detail)
+        <tr>
+            <td>
+                <select name="produk_id[]" class="form-control product-select">
+                    <option value="">-- Pilih Produk --</option>
+                    @foreach ($produk as $pro)
+                        <option value="{{ $pro->id }}"
+                            data-harga="{{ $pro->harga }}"
+                            {{ $detail->produk_id == $pro->id ? 'selected' : '' }}>
+                            {{ $pro->nama_barang }}
+                        </option>
+                    @endforeach
+                </select>
+            </td>
+            <td>
+                <input type="number" name="qty[]" class="form-control text-end qty" value="{{ $detail->qty }}">
+            </td>
+            <td>
+                <input type="text" name="harga[]" class="form-control text-end harga" value="{{ $detail->harga }}" data-value="{{ $detail->harga }}" readonly>
+            </td>
+            <td>
+                <input type="text" name="subtotal[]" class="form-control text-end bg-light subtotal" value="{{ number_format($detail->subtotal,0,',','.') }}" readonly>
+            </td>
+            <td class="text-center">
+                <button type="button" class="btn btn-danger btn-sm btn-delete">X</button>
+            </td>
+        </tr>
+    @endforeach
+
 @else
-    {{-- Baris default kalau belum ada data --}}
+    {{-- Baris kosong default --}}
     <tr>
+        <td colspan="5" class="text-center">Belum ada produk</td>
     </tr>
 @endif
 
@@ -146,7 +167,7 @@
     type="text"
     id="grandTotal"
     class="form-control w-50 text-end fw-bold"
-    value="{{ old('total') ? 'Rp '.number_format((int) old('total'),0,',','.') : '' }}"
+     value="{{ old('total', $grandTotal) ? 'Rp '.number_format((int) old('total', $grandTotal),0,',','.') : '' }}"
     readonly
 >
 </div>
@@ -157,7 +178,7 @@
                                 <label>Dibayar</label>
                                 <input type="number"
                                     id="dibayar"
-                                    class="form-control text-end @error('dibayar') is-invalid @enderror" name="dibayar"
+                                    class="form-control text-end @error('dibayar') is-invalid @enderror" name="dibayar" value="{{ $penjualan->dibayar }}"
                                     >
                                     @error('dibayar')
     <div class="text-danger">{{ $message }}</div>
@@ -275,6 +296,9 @@ $('#dibayar').on('input', function(){
     hitungKembalian();
 });
 
+$(document).ready(function() {
+    hitungTotal2(); // hitung subtotal & grandTotal awal dari database
+});
 
 
 $(document)

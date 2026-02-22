@@ -14,9 +14,14 @@ class Penjualan extends Model
         'dibayar',
         'metode_pembayaran',
         'user_id',
+        'status'
     ];
     public function penjualan_detail(){
         return $this->hasMany(PenjualanDetail::class);
     }
+    public function user()
+{
+    return $this->belongsTo(User::class);
+}
 
 }

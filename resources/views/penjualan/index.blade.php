@@ -7,7 +7,11 @@
     @if (session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
-
+@if (session('warning'))
+    <div class="alert alert-warning">
+        {{ session('warning') }}
+    </div>
+@endif
     {{-- HEADER --}}
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
@@ -79,14 +83,49 @@
                         <th>Kode</th>
                         <th>Tanggal</th>
                         <th>Total</th>
-                        <th>Dibayar</th>
                         <th>Metode</th>
                         <th>User</th>
+                        <th>Status</th>
                         <th width="15%">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {{-- Loop Data Disini --}}
+                    @foreach ($penjualan as $pen)
+                        <tr>
+                    <td class="text-center">{{ $penjualan->firstItem() + $loop->index. '.'}}</td>
+                    <td>{{ $pen->kode }}</td>
+                    <td>{{ $pen->tanggal }}</td>
+                    <td>{{ $pen->total }}</td>
+                    <td>{{ $pen->metode_pembayaran }}</td>
+                    <td>{{ $pen->user ? $pen->user->email : '-' }}</td>
+                    <td>
+                        @if ($pen->status === 'BERHASIL')
+                            <span class="badge bg-success text-light">Berhasil</span>
+                        @elseif ($pen->status === 'DIBATALKAN')
+                            <span class="badge bg-danger text-light">Dibatalkan</span>
+                        @endif
+                    </td>
+                    <td>
+                        @if ($pen->status === 'BERHASIL')
+                        <a href="{{ route('penjualan.update', $pen->id) }}" class="btn btn-primary btn-sm">Edit</a>
+                        <form action="{{ route('penjualan.cancel', $pen->id) }}"
+      method="POST"
+      style="display:inline;">
+    @csrf
+                        <button class="btn btn-danger btn-sm"
+        onclick="return confirm('Batalkan transaksi ini? Stok akan dikembalikan.')">
+        Cancel
+    </button>
+</form>
+ @else
+        <a href=""
+           class="btn btn-dark btn-sm">Detail</a>
+    @endif
+                    </td>
+                        </tr>
+
+                    @endforeach
+
                 </tbody>
             </table>
 
@@ -95,6 +134,7 @@
 
     <div class="mt-3 d-flex justify-content-end">
         {{-- {{ $penjualans->links() }} --}}
+        {{ $penjualan->appends(request()->query())->links() }}
     </div>
 
 </div>

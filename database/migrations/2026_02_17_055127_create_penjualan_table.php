@@ -19,6 +19,7 @@ return new class extends Migration
             $table->decimal('dibayar', 15, 2);
             $table->enum('metode_pembayaran', ['CASH', 'TRANSFER', 'QRIS'])->default('CASH');
             $table->foreignId('user_id')->constrained()->onDelete('restrict');
+            $table->enum('status', ['BERHASIL', 'DIBATALKAN'])->default('BERHASIL');
             $table->timestamps();
         });
 

@@ -108,6 +108,9 @@ Route::get('/barangmasukdetail', [BarangMasukDetailController::class, 'index'])-
 Route::get('/penjualan', [PenjualanController::class, 'index'])->name('penjualan');
 Route::get('/penjualan/add', [PenjualanController::class, 'create'])->name('penjualan.add');
 Route::post('/penjualan', [PenjualanController::class, 'store'])->name('penjualan.add');
+Route::get('/penjualan/{id}', [PenjualanController::class, 'show'])->name('penjualan.update');
+Route::put('/penjualan/{id}', [PenjualanController::class, 'update'])->name('penjualan.update');
+Route::post('/penjualan/{id}', [PenjualanController::class, 'cancel'])->name('penjualan.cancel');
 require __DIR__.'/auth.php';
 
 

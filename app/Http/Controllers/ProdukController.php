@@ -95,7 +95,7 @@ class ProdukController extends Controller
                'kategori_id' => $request->input('kategori_id'),
             'kode' => $request->input('kode'),
             'nama_barang' => $request->input('nama_barang'),
-            'stok' => $request->input('stok'),
+           'stok' => $request->stok ?? 0,
             'harga' => $request->input('harga'),
         ];
         ProdukModel::where('id', $id)->update($data);

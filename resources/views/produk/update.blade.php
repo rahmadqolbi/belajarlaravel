@@ -69,7 +69,7 @@
                         <div class="text-danger mt-1">{{ $message }}</div>
                     @enderror
                     </div>
-   {{-- <div class="col-md-4 mt-3">
+            {{-- <div class="col-md-4 mt-3">
                         <label for="stok" class="form-label">Stok</label>
                         <input type="number" class="form-control" id="stok" value="{{ $data->stok }}" name="stok" />
                     </div> --}}

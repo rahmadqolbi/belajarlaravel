@@ -58,7 +58,6 @@
 
                 <div class="d-flex justify-content-end">
                      {{ $data->appends(request()->query())->links() }}
-
                 </div>
         </div>
     </div>

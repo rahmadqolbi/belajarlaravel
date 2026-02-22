@@ -22,24 +22,25 @@ class StorePenjualanRequest extends FormRequest
     public function rules(): array
     {
         return [
-        'qty' => 'required|array',
-        'qty.*' => 'required|numeric|min:1',
-        'dibayar' => 'required|numeric|min:0',
-        'produk_id' => 'required|array|min:1',
-        'produk_id.*' => 'required|exists:produk,id',
-
+        // 'qty.*' => 'required|numeric|min:1',
+        //  'produk_id' => 'required|array',
+        // 'produk_id.*' => 'required|exists:produk,id',
+        // 'total' => 'required'
         ];
     }
     public function attributes()
     {
         return [
-            'dibayar' => 'Dibayar',
+            // 'qty.*' => 'Qty',
+            // 'produk_id' => 'Produk',
+            // 'produk_id.*' => 'Produk'
         ];
     }
     public function messages()
     {
         return [
-            'dibayar' => ':attribute Wajib Di isi'
+            // 'qty.*' => ':attribute Wajib Di isi',
+            // 'produk_id.*' => ':attribute Wajib Di Isi'
         ];
     }
 }
