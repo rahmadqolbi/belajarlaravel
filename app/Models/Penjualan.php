@@ -16,6 +16,9 @@ class Penjualan extends Model
         'user_id',
         'status'
     ];
+    protected $casts = [
+        'tanggal' => 'datetime'
+    ];
     public function penjualan_detail(){
         return $this->hasMany(PenjualanDetail::class);
     }

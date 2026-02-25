@@ -105,12 +105,15 @@ Route::delete('/barangmasuk/{id}', [BarangMasukController::class, 'destroy'])->n
 Route::get('/barangmasukdetail', [BarangMasukDetailController::class, 'index'])->name('barangmasukdetail');
 
 
+Route::get('/penjualan/export-pdf', [PenjualanController::class, 'exportPdf'])->name('penjualan.export.pdf');
+
 Route::get('/penjualan', [PenjualanController::class, 'index'])->name('penjualan');
 Route::get('/penjualan/add', [PenjualanController::class, 'create'])->name('penjualan.add');
 Route::post('/penjualan', [PenjualanController::class, 'store'])->name('penjualan.add');
 Route::get('/penjualan/{id}', [PenjualanController::class, 'show'])->name('penjualan.update');
 Route::put('/penjualan/{id}', [PenjualanController::class, 'update'])->name('penjualan.update');
 Route::post('/penjualan/{id}', [PenjualanController::class, 'cancel'])->name('penjualan.cancel');
+Route::get('/penjualan/{id}', [PenjualanController::class, 'detail'])->name('penjualan.detail');
 require __DIR__.'/auth.php';
 
 

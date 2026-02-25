@@ -12,6 +12,9 @@
         {{ session('warning') }}
     </div>
 @endif
+<style>
+    .pagination { margin-bottom: 0 !important; }
+</style>
     {{-- HEADER --}}
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
@@ -31,6 +34,7 @@
 
                     <div class="col-md-3">
                         <label>Search</label>
+                        <form action="{{ route('penjualan') }}" method="GET ">
                         <input type="text" name="search"
                                class="form-control"
                                placeholder="Kode / User..."
@@ -53,12 +57,13 @@
 
                     <div class="col-md-2">
                         <label>Metode</label>
-                        <select name="metode" class="form-control">
+                      <select name="metode_pembayaran" class="form-control" onchange="this.form.submit()">
                             <option value="">Semua</option>
-                            <option value="CASH">CASH</option>
-                            <option value="TRANSFER">TRANSFER</option>
-                            <option value="QRIS">QRIS</option>
+                            <option value="CASH" {{ $metode == 'CASH' ? 'selected' : '' }}>CASH</option>
+                            <option value="TRANSFER" {{ $metode == 'TRANSFER' ? 'selected' : '' }}>TRANSFER</option>
                         </select>
+                        </form>
+
                     </div>
 
                     <div class="col-md-3 d-flex align-items-end">
@@ -94,8 +99,8 @@
                         <tr>
                     <td class="text-center">{{ $penjualan->firstItem() + $loop->index. '.'}}</td>
                     <td>{{ $pen->kode }}</td>
-                    <td>{{ $pen->tanggal }}</td>
-                    <td>{{ $pen->total }}</td>
+                    <td>{{ $pen->tanggal->format('d-M-Y') }}</td>
+                  <td>Rp {{ number_format($pen->total, 0, ',', '.') }}</td>
                     <td>{{ $pen->metode_pembayaran }}</td>
                     <td>{{ $pen->user ? $pen->user->email : '-' }}</td>
                     <td>
@@ -118,7 +123,7 @@
     </button>
 </form>
  @else
-        <a href=""
+        <a href="{{ route('penjualan.detail', $pen->id) }}"
            class="btn btn-dark btn-sm">Detail</a>
     @endif
                     </td>
@@ -131,11 +136,29 @@
 
         </div>
     </div>
+<div class="d-flex justify-content-between align-items-center mt-3">
 
-    <div class="mt-3 d-flex justify-content-end">
-        {{-- {{ $penjualans->links() }} --}}
-        {{ $penjualan->appends(request()->query())->links() }}
+    {{-- Kiri: Export PDF --}}
+    <a href="{{ route('penjualan.export.pdf', [
+        'search'            => $search,
+        'metode_pembayaran' => $metode,
+        'from'              => $from,
+        'to'                => $to,
+    ]) }}" class="btn btn-outline-danger btn-sm">
+        📄 Export PDF
+    </a>
+
+    {{-- Kanan: Pagination --}}
+    <div class="mb-0">
+        {{ $penjualan->appends([
+            'search'            => $search,
+            'metode_pembayaran' => $metode,
+            'from'              => $from,
+            'to'                => $to,
+        ])->links() }}
     </div>
+
+</div>
 
 </div>
 @endsection

@@ -10,19 +10,52 @@ use App\Models\PenjualanDetail;
 use App\Models\ProdukModel;
 use Illuminate\Http\Request;
 // Remove this line if you are not using Auth::... in the file
-use Illuminate\Support\Facades\Auth;
+// use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\ValidationException;
+// use Illuminate\Validation\ValidationException;
+use Barryvdh\DomPDF\Facade\Pdf;
 class PenjualanController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $penjualan = Penjualan::with('user')->latest()->paginate(5);
+        // $penjualan = Penjualan::with('user')
+        // ->when($search, function ($query, $search) {
+        //     $query->where('no_invoice', 'like', "%{$search}%")
+        //           ->orWhere('total', 'like', "%{$search}%")
+        //           ->orWhereHas('user', function ($query) use ($search) {
+        //               $query->where('name', 'like', "%{$search}%");
+        //           });
+        // })
+        // ->latest()
+        // ->paginate(5);
+         $search = $request->input('search');
+        $metode = $request->input('metode_pembayaran');
+        $to = $request->input('to');
+        $from = $request->input('from');
+
+        $penjualan = Penjualan::with('user')
+    ->when($search, function($query, $search) {
+        $query->where('kode', 'like', "%{$search}%");
+    })
+    ->when($metode, function($query, $metode) {
+        $query->where('metode_pembayaran', $metode);
+    })
+     ->when($from, function($query, $from){
+        $query->whereDate('tanggal', '>='   , $from);
+    })
+     ->when($to, function($query, $to){
+        $query->whereDate('tanggal', '<='   , $to);
+    })
+
+    ->latest()->paginate(5);
         $penjualanDetail = PenjualanDetail::all();
-        return view('penjualan.index', compact('penjualan'));
+
+
+        return view('penjualan.index', compact('penjualan', 'search', 'metode', 'to', 'from'));
+
     }
 
     /**
@@ -249,4 +282,37 @@ class PenjualanController extends Controller
     return redirect()->route('penjualan')
         ->with('success', 'Transaksi berhasil dibatalkan dan stok dikembalikan.');
 }
+
+    public function detail(string $id)
+    {
+        $penjualan = Penjualan::findOrFail($id);   // data penjualan yang mau diupdate
+        $produk = ProdukModel::all();                     // semua produk untuk dropdown
+        $oldProduk = $penjualan->produk_id;
+        $detailPenjualan = $penjualan->penjualan_detail;        // produk yang dipilih saat ini
+        $grandTotal = $penjualan->total;
+        return view('penjualan.detail', compact('penjualan', 'produk', 'oldProduk', 'detailPenjualan','grandTotal'));
+    }
+
+
+
+    public function exportPdf(Request $request){
+        $search = $request->input('search');
+    $metode = $request->input('metode_pembayaran');
+    $from   = $request->input('from');
+    $to     = $request->input('to');
+
+   $penjualan = Penjualan::with('user')
+    ->when($search, fn($q) => $q->where('kode', 'like', "%{$search}%"))
+    ->when($metode, fn($q) => $q->where('metode_pembayaran', $metode))
+    ->when($from,   fn($q) => $q->whereDate('tanggal', '>=', $from))
+    ->when($to,     fn($q) => $q->whereDate('tanggal', '<=', $to))
+    ->latest()
+    ->get();
+
+    $grandTotal = $penjualan->where('status', 'BERHASIL')->sum('total');
+    $pdf = Pdf::loadView('penjualan.pdf', compact('penjualan', 'from', 'to', 'grandTotal'))
+              ->setPaper('a4', 'landscape');
+
+    return $pdf->download('laporan-penjualan.pdf');
+    }
 }
