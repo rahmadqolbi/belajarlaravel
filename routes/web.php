@@ -113,7 +113,7 @@ Route::post('/penjualan', [PenjualanController::class, 'store'])->name('penjuala
 Route::get('/penjualan/{id}', [PenjualanController::class, 'show'])->name('penjualan.update');
 Route::put('/penjualan/{id}', [PenjualanController::class, 'update'])->name('penjualan.update');
 Route::post('/penjualan/{id}', [PenjualanController::class, 'cancel'])->name('penjualan.cancel');
-Route::get('/penjualan/{id}', [PenjualanController::class, 'detail'])->name('penjualan.detail');
+Route::get('/penjualan/detail/{id}', [PenjualanController::class, 'detail'])->name('penjualan.detail');
 require __DIR__.'/auth.php';
 
 

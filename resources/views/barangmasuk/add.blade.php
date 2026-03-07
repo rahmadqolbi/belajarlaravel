@@ -262,22 +262,30 @@ $(document).ready(function(){
     minimumInputLength: 1
 });
 
- $(document).on('change', '.product-select', function(){
+$(document).on('change', '.product-select', function(){
 
-        let values = [];
+    let currentSelect = $(this);
+    let currentValue = currentSelect.val();
 
-        $('.product-select').each(function(){
-            let val = $(this).val();
+    if(!currentValue) return; // kalau kosong, abaikan
 
-            if(values.includes(val)){
-                alert('Produk sudah dipilih!');
-                $(this).val(null).trigger('change');
-            }
+    let duplicate = false;
 
-            values.push(val);
-        });
+    $('.product-select').not(currentSelect).each(function(){
+
+        if($(this).val() === currentValue){
+            duplicate = true;
+            return false; // hentikan loop
+        }
 
     });
+
+    if(duplicate){
+        alert('Produk sudah dipilih!');
+        currentSelect.val(null).trigger('change');
+    }
+
+});
 
 });
 

@@ -170,75 +170,74 @@ class PenjualanController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdatePenjualanRequest $request, string $id)
+   public function update(UpdatePenjualanRequest $request, string $id)
 {
-    DB::transaction(function () use ($request, $id) {
+    $penjualan = Penjualan::with('penjualan_detail')->findOrFail($id);
+    $produkIds = $request->input('produk_id', []);
+    $qtys = $request->input('qty', []);
 
-        // Ambil penjualan yang ingin diupdate
+    // ✅ Hitung total dulu SEBELUM transaksi
+    $total = 0;
+    foreach ($produkIds as $i => $produkId) {
+        if (!$produkId) continue;
+        $produk = ProdukModel::findOrFail($produkId);
+        $qty = $qtys[$i] ?? 0;
+        $total += $produk->harga * $qty;
+    }
+
+    // ✅ Validasi dibayar di LUAR transaksi
+    if ($request->dibayar < $total) {
+        return back()
+            ->withErrors(['dibayar' => 'Uang dibayar kurang.'])
+            ->withInput();
+    }
+
+    DB::transaction(function () use ($request, $id, $produkIds, $qtys, $total) {
+
         $penjualan = Penjualan::findOrFail($id);
-        $produkIds = $request->input('produk_id', []);
-        $qtys = $request->input('qty', []);
-        $total = 0;
 
-        // 1️⃣ Kembalikan stok dari detail lama
+        // 1️⃣ Kembalikan stok lama
         foreach ($penjualan->penjualan_detail as $detail) {
-            $produk = ProdukModel::lockForUpdate()->findOrFail($detail->produk_id);
-            $produk->increment('stok', $detail->qty); // kembalikan stok lama
+            ProdukModel::lockForUpdate()->findOrFail($detail->produk_id)
+                ->increment('stok', $detail->qty);
         }
 
         // 2️⃣ Hapus detail lama
         $penjualan->penjualan_detail()->delete();
 
-        // 3️⃣ Validasi stok baru
-        foreach ($produkIds as $i => $produkId) {
-            if (!$produkId) continue;
-
-            $produk = ProdukModel::lockForUpdate()->findOrFail($produkId);
-            $qty = $qtys[$i] ?? 0;
-
-           if ($qty > $produk->stok) {
-         session()->flash('warning',
-        "Stok {$produk->nama_barang} minus {$produk->stok} segera lakukan input stok agar tidak lupa");
-}
-        }
-
-        // 4️⃣ Update data penjualan
+        // 3️⃣ Update header penjualan
         $penjualan->update([
-            'kode' => $request->kode,
-            'tanggal' => $request->tanggal,
-            'dibayar' => $request->dibayar,
-            'metode_pembayaran' => $request->metode_pembayaran,
-            'user_id' => auth()->id(),
-            'total' => 0, // sementara, nanti diupdate
+            'kode'               => $request->kode,
+            'tanggal'            => $request->tanggal,
+            'dibayar'            => $request->dibayar,
+            'metode_pembayaran'  => $request->metode_pembayaran,
+            'user_id'            => auth()->id(),
+            'total'              => $total,
         ]);
 
-        if ($request->dibayar < $total) {
-            return back()->withErrors(['dibayar' => 'Uang dibayar kurang.'])->withInput();
-        }
-
-        // 5️⃣ Buat detail baru dan update stok
+        // 4️⃣ Buat detail baru & kurangi stok
         foreach ($produkIds as $i => $produkId) {
             if (!$produkId) continue;
 
             $produk = ProdukModel::lockForUpdate()->findOrFail($produkId);
-            $qty = $qtys[$i] ?? 0;
-            $harga = $produk->harga;
-            $subtotal = $harga * $qty;
-            $total += $subtotal;
+            $qty    = $qtys[$i] ?? 0;
+            $harga  = $produk->harga;
+
+            if ($qty > $produk->stok) {
+                session()->flash('warning',
+                    "Stok {$produk->nama_barang} tersisa {$produk->stok}, segera lakukan input stok!");
+            }
 
             PenjualanDetail::create([
                 'penjualan_id' => $penjualan->id,
-                'produk_id' => $produkId,
-                'qty' => $qty,
-                'harga' => $harga,
-                'subtotal' => $subtotal,
+                'produk_id'    => $produkId,
+                'qty'          => $qty,
+                'harga'        => $harga,
+                'subtotal'     => $harga * $qty,
             ]);
 
-            $produk->decrement('stok', $qty); // kurangi stok sesuai qty baru
+            $produk->decrement('stok', $qty);
         }
-
-        // 6️⃣ Update total
-        $penjualan->update(['total' => $total]);
     });
 
     return redirect()->route('penjualan')->with('success', 'Transaksi Berhasil');

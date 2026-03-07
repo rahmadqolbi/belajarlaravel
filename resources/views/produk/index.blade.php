@@ -14,6 +14,22 @@
 
     <div class="card shadow-sm mb-4">
         <div class="card-body">
+            <div class="row">
+                <div class="col-md-3 mb-3">
+                <label for="search">Search</label>
+                <form action="{{ route('produk') }}" method="GET">
+                <input type="text" name="search" class="form-control" placeholder="Cari Barang..." value="{{ request('search') }}">
+
+            </div>
+            <div class="col-md-9 mb-3 d-flex align-items-end">
+                   <button class="btn btn-primary w-20  ">
+                            🔍 Filter
+                        </button>
+                        </form>
+
+            </div>
+            </div>
+
              <table class="table table-hover width="100%" cellspacing="0"">
                     <thead>
                         <tr>
@@ -57,7 +73,11 @@
                 <a href="{{ route('produk.add') }}" class="btn btn-primary">Tambah</a>
 
                 <div class="d-flex justify-content-end">
-                     {{ $data->appends(request()->query())->links() }}
+                     {{ $data->appends(
+                        [
+                            'search' => $search,
+                        ]
+                     )->links() }}
                 </div>
         </div>
     </div>

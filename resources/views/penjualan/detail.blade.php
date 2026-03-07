@@ -26,7 +26,7 @@
 
                 <div class="col-md-4">
                     <label>Tanggal</label>
-                    <input type="date" class="form-control" value="{{ $penjualan->tanggal }}" name="tanggal" disabled>
+                    <input type="date" class="form-control" value="{{ old('tanggal', $penjualan->tanggal->format('Y-m-d')) }}" name="tanggal" disabled>
                 </div>
 
                 <div class="col-md-4">
@@ -84,18 +84,18 @@
             </td>
             <td>
                <input type="number"  name="qty[]" class="form-control text-end qty"
-       value="{{ old('qty.' . $index, $penjualan_detail->qty) }}" >
+       value="{{ old('qty.' . $index, $detailPenjualan->qty) }}" >
             </td>
             <td>
                 <input type="text" name="harga[]" class="form-control text-end harga"
-       value="{{ $penjualan_detail->harga }}"
-       data-value="{{ $penjualan_detail->harga }}" readonly>
+       value="{{ $detailPenjualan->harga }}"
+       data-value="{{ $detailPenjualan->harga }}" readonly>
             </td>
           <td>
     <input type="text"
            name="subtotal[]"
            class="form-control text-end bg-light subtotal"
-           value="{{ old('subtotal.' . $index, number_format($penjualan_detail->subtotal, 0, ',', '.')) }}"
+           value="{{ old('subtotal.' . $index, number_format($detailPenjualan->subtotal, 0, ',', '.')) }}"
            readonly>
 </td>
             <td class="text-center">

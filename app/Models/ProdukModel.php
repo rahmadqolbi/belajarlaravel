@@ -15,6 +15,10 @@ class ProdukModel extends Model
         "stok",
         "harga",
     ];
+    public function produk()
+{
+    return $this->belongsTo(ProdukModel::class);
+}
     //  public function kategori()
     // {
     //     return $this->belongsTo(Kategori::class, 'kategori_id');

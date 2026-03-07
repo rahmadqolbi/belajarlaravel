@@ -27,7 +27,7 @@
 
                 <div class="col-md-4">
                     <label>Tanggal</label>
-                    <input type="date" class="form-control" value="{{ $penjualan->tanggal }}" name="tanggal">
+                    <input type="date" class="form-control" value="{{ old('tanggal', $penjualan->tanggal->format('Y-m-d')) }}" name="tanggal" required>
                 </div>
 
                 <div class="col-md-4">

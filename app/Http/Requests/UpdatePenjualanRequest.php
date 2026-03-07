@@ -24,7 +24,7 @@ class UpdatePenjualanRequest extends FormRequest
       $id = $this->route('id'); // ambil ID penjualan dari route
     return [
         'kode' => 'required|unique:penjualan,kode,' . $id, // pastikan TIDAK ada spasi sebelum $id
-        'tanggal' => 'required|date',
+        'tanggal' => 'required|date_format:Y-m-d',
         'dibayar' => 'required|numeric',
         'metode_pembayaran' => 'required|string',
         'produk_id.*' => 'required|exists:produk,id',

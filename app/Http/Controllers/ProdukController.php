@@ -13,18 +13,26 @@ class ProdukController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
+        $search = $request->input('search');
+        $data = ProdukModel::with('produk')
+        ->when($search, function($query, $search){
+            $query->where('nama_barang', 'like', "%{$search}%");
+        })
+
+        ->latest()->paginate(5);
+        // dd($search);
         $max = 5;
 
-        if(request('search')){
-        $data = ProdukModel::where('nama_barang', 'LIKE', '%'.request('search').'%')->latest()->paginate($max);
-        }else{
-        $data = ProdukModel::latest()->paginate($max);
+        // if(request('search')){
+        // $data = ProdukModel::where('nama_barang', 'LIKE', '%'.request('search').'%')->latest()->paginate($max);
+        // }else{
+        // $data = ProdukModel::latest()->paginate($max);
 
-        }
+        // }
         $data_kategori = Kategori::pluck('nama_kategori', 'id');
-        return view('produk.index', compact('data', 'data_kategori'));
+        return view('produk.index', compact('data', 'data_kategori', 'search'));
     }
 
     /**
