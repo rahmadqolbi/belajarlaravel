@@ -5,8 +5,11 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreProdukRequest;
 use App\Http\Requests\UpdateProdukRequest;
 use App\Models\Kategori;
+use App\Models\Outlet;
 use App\Models\ProdukModel;
+use App\Models\StokOutlet;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ProdukController extends Controller
 {
@@ -15,6 +18,7 @@ class ProdukController extends Controller
      */
     public function index(Request $request)
     {
+        $outlet = Outlet::all();
         $search = $request->input('search');
         $data = ProdukModel::with('produk')
         ->when($search, function($query, $search){
@@ -24,6 +28,12 @@ class ProdukController extends Controller
         ->latest()->paginate(5);
         // dd($search);
         $max = 5;
+       $stokGlobal = StokOutlet::select('produk_id', DB::raw('SUM(stok) as total_stok'))
+            ->groupBy('produk_id')
+            ->pluck('total_stok', 'produk_id');
+
+    $data_kategori = Kategori::pluck('nama_kategori', 'id');
+        return view('produk.index', compact('data', 'data_kategori', 'search', 'outlet', 'stokGlobal'));
 
         // if(request('search')){
         // $data = ProdukModel::where('nama_barang', 'LIKE', '%'.request('search').'%')->latest()->paginate($max);
@@ -31,8 +41,6 @@ class ProdukController extends Controller
         // $data = ProdukModel::latest()->paginate($max);
 
         // }
-        $data_kategori = Kategori::pluck('nama_kategori', 'id');
-        return view('produk.index', compact('data', 'data_kategori', 'search'));
     }
 
     /**
@@ -115,7 +123,28 @@ class ProdukController extends Controller
      */
     public function destroy(string $id)
     {
-        ProdukModel::where('id', $id)->delete();
+        $produk = ProdukModel::findOrFail($id);
+        $totalStok = StokOutlet::where('produk_id', $id)->sum('stok');
+        if($totalStok > 0){
+             return redirect()->route('produk')
+            ->with('error', 'Produk tidak bisa dihapus! Masih ada stok ' . $totalStok . ' di outlet.');
+        }
+        $produk->delete();
         return redirect()->route('produk')->with('delete', 'Data Berhasil Di Hapus');
     }
+
+    public function stokCabang(string $id)
+{
+    $produk = ProdukModel::findOrFail($id);
+
+    $stokPerOutlet = DB::table('stok_outlet')
+        ->join('outlet', 'outlet.id', '=', 'stok_outlet.outlet_id')
+        ->where('stok_outlet.produk_id', $id)
+        ->select('outlet.nama_outlet', 'stok_outlet.stok', 'stok_outlet.updated_at')
+        ->get();
+
+    $totalStok = $stokPerOutlet->sum('stok');
+
+    return view('produk.stok-cabang', compact('produk', 'stokPerOutlet', 'totalStok'));
+}
 }

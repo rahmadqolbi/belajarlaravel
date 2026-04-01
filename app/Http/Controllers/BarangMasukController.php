@@ -47,16 +47,18 @@ class BarangMasukController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreBarangMasukRequest $request)
+   public function store(StoreBarangMasukRequest $request)
 {
+  try {
+
     DB::transaction(function () use ($request) {
 
-        [$type, $id] = explode('-', $request->tujuan_type);
+        [$type, $tujuanId] = explode('-', $request->tujuan_type);
         $type = strtolower($type);
 
         $tujuan = match($type) {
-            'gudang' => Gudang::findOrFail($id),
-            'outlet' => Outlet::findOrFail($id)
+            'gudang' => Gudang::findOrFail($tujuanId),
+            'outlet' => Outlet::findOrFail($tujuanId)
         };
 
         $barangMasuk = BarangMasuk::create([
@@ -66,27 +68,36 @@ class BarangMasukController extends Controller
             'keterangan'  => $request->keterangan,
         ]);
 
-         foreach ($request->barang_id as $i => $id) {
+        foreach ($request->barang_id as $i => $barangId) {
 
-    $qty = $request->qty[$i]; // ← buat variabel dulu
+            $qty = $request->qty[$i];
+            $hargaInput = $request->harga[$i];
 
-    BarangMasukDetail::create([
-        'barang_masuk_id' => $barangMasuk->id,
-        'barang_id' => $id,
-        'qty' => $qty,
-        'harga' => $request->harga[$i],
-    ]);
+            $produk = ProdukModel::find($barangId);
 
-}
+            // 🚨 VALIDASI UTAMA
+            if ($hargaInput > $produk->harga) {
+                throw new \Exception('Harga modal tidak boleh lebih besar dari harga jual');
+            }
 
+            BarangMasukDetail::create([
+                'barang_masuk_id' => $barangMasuk->id,
+                'barang_id'       => $barangId,
+                'qty'             => $qty,
+                'harga'           => $hargaInput,
+            ]);
+        }
 
         $barangMasuk->tujuan()->associate($tujuan);
         $barangMasuk->save();
-
     });
 
     return redirect()->route('barangmasuk')
         ->with('success', 'Data berhasil ditambahkan');
+
+} catch (\Exception $e) {
+    return redirect()->back()->with('error', $e->getMessage());
+}
 }
 
 
@@ -97,7 +108,7 @@ class BarangMasukController extends Controller
 {
     $detail = BarangMasukDetail::where('barang_masuk_id', $id)->get();
 
-     return view('barangmasuk.update', [
+     return view('barangmasuk.show', [
         'data'     => BarangMasuk::findOrFail($id),
         'detail'  => $detail,
         'supplier' => Supplier::all(),
@@ -113,7 +124,17 @@ class BarangMasukController extends Controller
 
     public function edit(string $id)
     {
-        //
+          $detail = BarangMasukDetail::where('barang_masuk_id', $id)->get();
+
+     return view('barangmasuk.update', [
+        'data'     => BarangMasuk::findOrFail($id),
+        'detail'  => $detail,
+        'supplier' => Supplier::all(),
+        'gudangs'  => Gudang::all(),
+        'outlets'  => Outlet::all(),
+        'produk'  => ProdukModel::all(),
+
+    ]);
     }
 
     /**
@@ -170,11 +191,37 @@ class BarangMasukController extends Controller
     // =============================
     // 5. Tambah stok jika status berubah DRAFT -> APPROVED
     // =============================
-    if ($oldStatus == 'DRAFT' && $request->status == 'APPROVED') {
-    foreach ($details as $detail) {
-        $produk = ProdukModel::find($detail->barang_id);
-        $produk->stok += $detail->qty;
-        $produk->save();
+ if ($oldStatus == 'DRAFT' && $request->status == 'APPROVED') {
+
+    [$type, $tujuanId] = explode('-', $request->tujuan_type);
+    $type = strtolower($type);
+
+    if ($type === 'outlet') {
+        foreach ($details as $detail) {
+
+            $stokAda = DB::table('stok_outlet')
+                ->where('produk_id', $detail->barang_id)
+                ->where('outlet_id', $tujuanId)
+                ->first();
+
+            if ($stokAda) {
+                DB::table('stok_outlet')
+                    ->where('produk_id', $detail->barang_id)
+                    ->where('outlet_id', $tujuanId)
+                    ->update([
+                        'stok'       => $stokAda->stok + $detail->qty,
+                        'updated_at' => now(),
+                    ]);
+            } else {
+                DB::table('stok_outlet')->insert([
+                    'produk_id'  => $detail->barang_id,
+                    'outlet_id'  => $tujuanId,
+                    'stok'       => $detail->qty,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            }
+        }
     }
 }
 

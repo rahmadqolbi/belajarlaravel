@@ -145,7 +145,7 @@
                     <div>
                         <div class="inv-label text-danger">Stok Menipis</div>
                         <div class="inv-value">{{ $stokMenipis ?? 0 }}</div>
-                        <div class="inv-sub">Produk stok ≤ 10</div>
+                        <div class="inv-sub">Produk stok ≤ 4</div>
                     </div>
                     <div class="inv-icon">
                         <i class="fas fa-exclamation-triangle"></i>

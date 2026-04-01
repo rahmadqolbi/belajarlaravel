@@ -2,22 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Penjualan;
-use App\Models\ProdukModel;
 use Illuminate\Http\Request;
 
-class DashboardController extends Controller
+class RiwayatPerpindahanStokController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $totalPenjualan = Penjualan::sum('total');
-        $transaksiBerhasil = Penjualan::where('status', 'BERHASIL')->count();
-        $totalProduk = ProdukModel::count('nama_barang');
-         $stokMenipis = ProdukModel::where('stok', '<', 4)->sum('stok');
-        return view('dashboard.index', compact('totalPenjualan', 'transaksiBerhasil', 'totalProduk', 'stokMenipis'));
+        //
     }
 
     /**

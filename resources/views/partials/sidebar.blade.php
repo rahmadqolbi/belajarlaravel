@@ -72,6 +72,13 @@
         <span>Barang Masuk</span>
     </a>
 </li>
+<li class="nav-item {{ request()->routeIs('perpindahanstok') ? 'active' : '' }}">
+    <a class="nav-link" href="{{ route('perpindahanstok') }}">
+        <i class="fas fa-fw fa-table"></i>
+        <span>Perpindahan Stok</span>
+    </a>
+</li>
+
 <li class="nav-item {{ request()->routeIs('penjualan') ? 'active' : '' }}">
     <a class="nav-link" href="{{ route('penjualan') }}">
         <i class="fas fa-fw fa-table"></i>

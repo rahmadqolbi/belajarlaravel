@@ -32,7 +32,7 @@ class StoreOutletRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'kode_outlet' => 'required',
+            'kode_outlet' => 'required|unique:outlet',
             'nama_outlet' => 'required',
             'alamat' => 'required',
             'penanggung_jawab' => 'required',
@@ -44,6 +44,7 @@ class StoreOutletRequest extends FormRequest
     {
         return [
             'required' => ':attribute Wajib Di Isi',
+            'unique' => ':attribute Sudah Ada'
         ];
     }
     public function attributes()

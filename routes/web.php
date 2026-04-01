@@ -11,7 +11,9 @@ use App\Http\Controllers\Halo\HaloController;
 use App\Http\Controllers\KategoriController;
 use App\Http\Controllers\OutletController;
 use App\Http\Controllers\PenjualanController;
+use App\Http\Controllers\PerpindahanStokController;
 use App\Http\Controllers\ProdukController;
+use App\Http\Controllers\RiwayatPerpindahanStokController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\Todo\TodoController;
 // use App\Models\Supplier;
@@ -73,6 +75,7 @@ Route::post('/produk', [ProdukController::class, 'store'])->name('produk.post');
 Route::get('/produk/{id}', [ProdukController::class,'show'])->name('produk.update');
 Route::put('/produk/{id}', [ProdukController::class,'update'])->name('produk.update');
 Route::delete('/produk/{id}', [ProdukController::class, 'destroy'])->name('produk.destroy');
+Route::get('/produk/{id}/stok', [ProdukController::class, 'stokCabang'])->name('produk.stok');
 
 Route::get('/supplier', [SupplierController::class, 'index'])->name('supplier');
 Route::get('/supplier/add', [SupplierController::class, 'create'])->name('supplier.add');
@@ -98,7 +101,8 @@ Route::delete('/outlet/{id}', [OutletController::class, 'destroy'])->name('outle
 Route::get('/barangmasuk', [BarangMasukController::class, 'index'])->name('barangmasuk');
 Route::get('/barangmasuk/add', [BarangMasukController::class, 'create'])->name('barangmasuk.add');
 Route::post('/barangmasuk', [BarangMasukController::class, 'store'])->name('barangmasuk.post');
-Route::get('/barangmasuk/{id}', [BarangMasukController::class, 'show'])->name('barangmasuk.update');
+Route::get('/barangmasuk/detail/{id}', [BarangMasukController::class, 'show'])->name('barangmasuk.show');
+Route::get('/barangmasuk/{id}', [BarangMasukController::class, 'edit'])->name('barangmasuk.edit');
 Route::put('/barangmasuk/{id}', [BarangMasukController::class, 'update'])->name('barangmasuk.update');
 Route::delete('/barangmasuk/{id}', [BarangMasukController::class, 'destroy'])->name('barangmasuk.destroy');
 });
@@ -114,6 +118,13 @@ Route::get('/penjualan/{id}', [PenjualanController::class, 'show'])->name('penju
 Route::put('/penjualan/{id}', [PenjualanController::class, 'update'])->name('penjualan.update');
 Route::post('/penjualan/{id}', [PenjualanController::class, 'cancel'])->name('penjualan.cancel');
 Route::get('/penjualan/detail/{id}', [PenjualanController::class, 'detail'])->name('penjualan.detail');
+
+Route::get('perpindahanstok', [PerpindahanStokController::class, 'index'])->name('perpindahanstok');
+Route::post('/perpindahanstok', [PerpindahanStokController::class, 'store'])->name('perpindahanstok.add');
+Route::get('/stok-outlet/{produkId}/{outletId}', [PerpindahanStokController::class, 'getStok'])->name('stok.outlet');
+Route::get('/riwayatperpindahanstok', [RiwayatPerpindahanStokController::class, 'index'])->name('riwayatperpindahanstok');
+
+
 require __DIR__.'/auth.php';
 
 

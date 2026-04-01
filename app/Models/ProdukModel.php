@@ -19,6 +19,11 @@ class ProdukModel extends Model
 {
     return $this->belongsTo(ProdukModel::class);
 }
+protected $casts = [
+    'created_at' => 'datetime',
+    'updated_at' => 'datetime',
+];
+
     //  public function kategori()
     // {
     //     return $this->belongsTo(Kategori::class, 'kategori_id');

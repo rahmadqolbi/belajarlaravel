@@ -50,7 +50,7 @@
 
                     </td>
             <td>
-                <a href="" class="btn btn-sm btn-info">Show</a>
+                <a href="{{ route('barangmasuk.show', $list->id) }}" class="btn btn-sm btn-info">Show</a>
                 <a href="{{ route('barangmasuk.update', $list->id) }}" class="btn btn-sm btn-primary">Edit</a>
                 <form action="{{ route('barangmasuk.destroy', $list->id) }}" method="POST" class="d-inline" onsubmit="return(confirm('Yakin Ingin Hapus Data ?'))">
                     @csrf

@@ -1,20 +1,15 @@
-@extends('layouts.app')
-@section('title', 'Tambah Barang Masuk')
-
+@extends('layouts.app');
+@section('title', 'Detail Barang Masuk')
 @section('content')
-
-@if(session('error'))
-<div class="alert alert-danger">{{ session('error') }}</div>
-@endif
- <form action="{{ route('barangmasuk') }}" method="POST">
+ <form action="" method="POST">
                         @csrf
-                        @method('post')
+                        @method('put')
                    <div class="row">
     <!-- KOLOM KIRI -->
     <div class="col-md-6">
         <div class="mb-3">
             <label class="form-label">Tanggal</label>
-            <input type="date" class="form-control text-uppercase @error('tanggal') is-invalid @enderror" name="tanggal" value="{{ old('tanggal') }}">
+            <input type="date" class="form-control text-uppercase @error('tanggal') is-invalid @enderror" name="tanggal" value="{{ old('tanggal', $data->tanggal->format('Y-m-d')) }}" disabled>
               @error('tanggal')
                         {{-- <div class="alert alert-danger w-50">{{ $message }}</div> --}}
                         <div class="text-danger mt-1">{{ $message }}</div>
@@ -23,13 +18,13 @@
 
       <div class="mb-3">
             <label for="supplier" class="form-label">Supplier</label>
-            <select class="custom-select @error('supplier_id') is-invalid @enderror" name="supplier_id">
-                 <option value="">-- Pilih Supplier --</option>
+            <select class="custom-select @error('supplier_id') is-invalid @enderror" name="supplier_id" disabled>
+                 <option value="">-- Pilih Kategori --</option>
 
-                 @foreach ($data as $item)
-        <option value="{{ $item->id }}"
-            {{ old('supplier_id') == $item->id ? 'selected' : '' }}>
-            {{ $item->nama_supplier }}
+                 @foreach ($supplier as $supp)
+        <option value="{{ $supp->id }}"
+            {{ old('supplier_id', $data->supplier_id) == $supp->id ? 'selected' : ''}}>
+            {{ $supp->nama_supplier }}
         </option>
     @endforeach
             </select>
@@ -39,26 +34,28 @@
                     @enderror
                     </div>
 
-
         <div class="mb-3">
             <label for="tujuan" class="form-label">Tujuan</label>
-            <select class="custom-select @error('tujuan_type') is-invalid @enderror" name="tujuan_type">
-                 <option value="">-- Pilih Tujuan --</option>
+            <select class="custom-select @error('tujuan_type') is-invalid @enderror" name="tujuan_type" disabled>
+                 <option value="">-- Pilih Kategori --</option>
 
                   <optgroup label="Gudang">
         @foreach ($gudangs as $gudang)
-            <option value="gudang-{{ $gudang->id }}">
+            <option value="gudang-{{ $gudang->id }}"
+                 {{ old('tujuan_type', $data->tujuan_select) === 'gudang-'.$gudang->id ? 'selected' : '' }}>
                 {{ $gudang->nama_gudang }}
             </option>
         @endforeach
-                </optgroup>
-                <optgroup label="Outlet">
-                    @foreach ($outlets as $outlet)
-                        <option value="outlet-{{ $outlet->id }}">
-                            {{ $outlet->nama_outlet }}
-                        </option>
-                    @endforeach
-                </optgroup>
+    </optgroup>
+
+    <optgroup label="Outlet">
+        @foreach ($outlets as $outlet)
+            <option value="outlet-{{ $outlet->id }}"
+                {{ old('tujuan_type', $data->tujuan_select) === 'outlet-'.$outlet->id ? 'selected' : '' }}>
+                {{ $outlet->nama_outlet }}
+            </option>
+        @endforeach
+    </optgroup>
             </select>
                @error('tujuan_type')
                         <div class="text-danger mt-1">{{ $message }}</div>
@@ -70,7 +67,7 @@
     <div class="col-md-6">
         <div class="mb-3">
             <label class="form-label">No Dokumen</label>
-            <input type="text" class="form-control text-uppercase @error('no_dokumen') is-invalid @enderror" name="no_dokumen" value="{{ $noDokumen }}" readonly>
+            <input type="text" class="form-control text-uppercase @error('no_dokumen') is-invalid @enderror" name="no_dokumen" value="{{ $data->no_dokumen }}" disabled>
               @error('no_dokumen')
                         {{-- <div class="alert alert-danger w-50">{{ $message }}</div> --}}
                         <div class="text-danger mt-1">{{ $message }}</div>
@@ -79,24 +76,23 @@
 
         <div class="mb-3">
             <label class="form-label ">Keterangan</label>
-            <input type="text" class="form-control text-uppercase @error('keterangan') is-invalid @enderror" name="keterangan" value="{{ old('keterangan') }}">
+            <input type="text" class="form-control text-uppercase @error('keterangan') is-invalid @enderror" name="keterangan" value="{{ $data->keterangan }}" disabled>
                @error('keterangan')
                         {{-- <div class="alert alert-danger w-50">{{ $message }}</div> --}}
                         <div class="text-danger mt-1">{{ $message }}</div>
                     @enderror
         </div>
-
-         <div class="mb-3">
-            <label class="form-label ">Keterangan</label>
-                         <select name="status" id="" class="custom-select">
-                            <option value="">--Pilih Status--</option>
-                            <option value="DRAFT">DRAFT</option>
+        <div class="mb-3">
+            <label class="form-label ">Status</label>
+                         <select name="status" id="" class="custom-select" disabled>
+                            <option value="DRAFT" {{ $data->status == 'DRAFT' ? 'selected' : ''}}>DRAFT</option>
+                            <option value="APPROVED" {{ $data->status == 'APPROVED' ? 'selected' : '' }}>APPROVED</option>
                          </select>
                         </div>
-            </div>
 
+            </div>
         </div>
-<div>
+                    <div>
     <div class="card shadow-sm border-0">
         <div class="card-header bg-primary text-white">
             <h5 class="mb-0">Detail Barang Masuk</h5>
@@ -116,53 +112,61 @@
                         </tr>
                     </thead>
                  <tbody id="tbody">
+        @foreach ($detail as $det)
+
 <tr>
 
     <td>
-    <select class="form-control product-select" name="barang_id[]">
-        <option value="">-- Pilih Barang --</option>
+
+    <select class="form-control product-select" name="barang_id[]" disabled>
+        <option value="" >-- Pilih Barang --</option>
         @foreach ($produk as $pro)
-        <option value="{{ $pro->id }}">{{ $pro->kode }} :{{ $pro->nama_barang}}</option>
+
+        <option value="{{ $pro->id }}"
+             {{ $pro->id == $det->barang_id ? 'selected' : '' }} disabled>
+                    {{ $pro->nama_barang }}
+        </option>
         @endforeach
+
     </select>
 </td>
 
 
     <td style="width:110px;">
-    <input type="number" class="form-control text-end qty" name="qty[]">
+
+    <input type="number" class="form-control text-end qty" name="qty[]" value="{{ $det['qty'] }}" disabled>
+
 </td>
     <td>
         <input type="number"
-            class="form-control text-end harga" name="harga[]">
+            class="form-control text-end harga" name="harga[]" value="{{ $det['harga'] }}" disabled>
     </td>
     <td>
-       <input type="text" class="form-control text-end bg-light total" name="total[]" readonly>
+     <input type="text" class="form-control text-end bg-light total" name="total[]" disabled>
     </td>
-
 
     <td class="text-center">
-        <button type="button"
+        {{-- <button type="button"
             class="btn btn-danger btn-sm btn-delete">
                       ×
-        </button>
+        </button> --}}
     </td>
 </tr>
+        @endforeach
 </tbody>
                 </table>
             </div>
 
             <div class="d-flex justify-content-between">
-                <button type="button"
+                {{-- <button type="button"
                     class="btn btn-outline-primary btn-sm" id="add">
                     + Tambah Baris
                 </button>
-
-    <button type="submit" class="btn btn-success">
-        <i class="fas fa-save"></i> Simpan
-
-    </button>
-
-
+                <button type="submit"
+    class="btn btn-success">
+    Edit Transaksi
+</button> --}}
+        <a href="{{ route('barangmasuk') }}" class="btn btn-dark btn-sm">Kembali</a>
             </div>
 
         </div>
@@ -171,41 +175,8 @@
         </div>
                     </form>
                      </div>
-<script>
-    $(document).ready(function() {
 
-  // fungsi format angka ke Rupiah
-  function formatRupiah(angka) {
-    return "Rp " + angka.toLocaleString('id-ID');
-  }
-
-  // fungsi hitung total tiap baris dan subtotal
-  function hitungTotal() {
-    var subtotal = 0;
-
-    $('table tbody tr').each(function() {
-      var qty = parseFloat($(this).find('.qty').val()) || 0;
-      var harga = parseFloat($(this).find('.harga').val()) || 0;
-      var total = qty * harga;
-
-      // tampilkan total per baris
-      $(this).find('.total').val(formatRupiah(total));
-
-      subtotal += total;
-    });
-
-    // tampilkan subtotal
-    $('#subtotal').val(formatRupiah(subtotal));
-  }
-
-  // jalankan saat input qty atau harga berubah
-  $('table').on('input', '.qty, .harga', hitungTotal);
-
-  // jalankan sekali saat page load untuk menghitung jika ada nilai awal
-  hitungTotal();
-
-});
-
+                     <script>
    $(document).ready(function(){
 
     $('#add').click(function(){
@@ -231,7 +202,7 @@
                 </td>
 
                 <td>
-                    <input type="text" class="form-control text-end bg-light total" readonly>
+                    <input type="text" class="form-control text-end bg-light total" disabled>
                 </td>
 
                 <td class="text-center">
@@ -265,30 +236,55 @@ $(document).ready(function(){
     minimumInputLength: 1
 });
 
-$(document).on('change', '.product-select', function(){
+ $(document).on('change', '.product-select', function(){
 
-    let currentSelect = $(this);
-    let currentValue = currentSelect.val();
+        let values = [];
 
-    if(!currentValue) return; // kalau kosong, abaikan
+        $('.product-select').each(function(){
+            let val = $(this).val();
 
-    let duplicate = false;
+            if(values.includes(val)){
+                alert('Produk sudah dipilih!');
+                $(this).val(null).trigger('change');
+            }
 
-    $('.product-select').not(currentSelect).each(function(){
-
-        if($(this).val() === currentValue){
-            duplicate = true;
-            return false; // hentikan loop
-        }
+            values.push(val);
+        });
 
     });
 
-    if(duplicate){
-        alert('Produk sudah dipilih!');
-        currentSelect.val(null).trigger('change');
-    }
-
 });
+$(document).ready(function() {
+
+  // fungsi format angka ke Rupiah
+  function formatRupiah(angka) {
+    return "Rp " + angka.toLocaleString('id-ID');
+  }
+
+  // fungsi hitung total tiap baris dan subtotal
+  function hitungTotal() {
+    var subtotal = 0;
+
+    $('table tbody tr').each(function() {
+      var qty = parseFloat($(this).find('.qty').val()) || 0;
+      var harga = parseFloat($(this).find('.harga').val()) || 0;
+      var total = qty * harga;
+
+      // tampilkan total per baris
+      $(this).find('.total').val(formatRupiah(total));
+
+      subtotal += total;
+    });
+
+    // tampilkan subtotal
+    $('#subtotal').val(formatRupiah(subtotal));
+  }
+
+  // jalankan saat input qty atau harga berubah
+  $('table').on('input', '.qty, .harga', hitungTotal);
+
+  // jalankan sekali saat page load untuk menghitung jika ada nilai awal
+  hitungTotal();
 
 });
 
@@ -309,6 +305,5 @@ $('#add').click(function(){
 
 
 </script>
-
 
 @endsection
