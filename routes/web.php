@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Aktifitas\AktifitasController;
+use App\Http\Controllers\AkunPenjualanController;
 use App\Http\Controllers\BarangMasukController;
 use App\Http\Controllers\BarangMasukDetailController;
 use App\Http\Controllers\DashboardController;
@@ -124,6 +125,7 @@ Route::post('/perpindahanstok', [PerpindahanStokController::class, 'store'])->na
 Route::get('/stok-outlet/{produkId}/{outletId}', [PerpindahanStokController::class, 'getStok'])->name('stok.outlet');
 Route::get('/riwayatperpindahanstok', [RiwayatPerpindahanStokController::class, 'index'])->name('riwayatperpindahanstok');
 
+Route::get('/akunpenjualan', [AkunPenjualanController::class, 'index'])->name('akunpenjualan');
 
 require __DIR__.'/auth.php';
 

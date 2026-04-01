@@ -85,6 +85,12 @@
         <span>Penjualan</span>
     </a>
 </li>
+<li class="nav-item {{ request()->routeIs('akunpenjualan') ? 'active' : '' }}">
+    <a class="nav-link" href="{{ route('akunpenjualan') }}">
+        <i class="fas fa-fw fa-table"></i>
+        <span>Kelola Akun Penjualan</span>
+    </a>
+</li>
 
             <!-- Divider -->
             <hr class="sidebar-divider d-none d-md-block">

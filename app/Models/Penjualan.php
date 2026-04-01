@@ -14,7 +14,8 @@ class Penjualan extends Model
         'dibayar',
         'metode_pembayaran',
         'user_id',
-        'status'
+        'status',
+        'cabang'
     ];
     protected $casts = [
         'tanggal' => 'datetime'
