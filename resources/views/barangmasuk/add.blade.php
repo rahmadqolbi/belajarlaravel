@@ -217,8 +217,8 @@
                         <option value="">-- Pilih Barang --</option>
 
                         @foreach ($produk as $pro)
-                        <option value="{{ $pro->id }}">{{ $pro->nama_barang }}</option>
-                        @endforeach
+        <option value="{{ $pro->id }}">{{ $pro->kode }} :{{ $pro->nama_barang}}</option>
+        @endforeach
                     </select>
                 </td>
 

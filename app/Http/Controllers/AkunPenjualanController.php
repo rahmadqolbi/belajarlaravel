@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Outlet;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class AkunPenjualanController extends Controller
 {
@@ -11,7 +14,8 @@ class AkunPenjualanController extends Controller
      */
     public function index()
     {
-        return view('akunpenjualan.index');
+        $outlet = Outlet::all();
+        return view('akunpenjualan.index', compact('outlet'));
     }
 
     /**
@@ -27,7 +31,21 @@ class AkunPenjualanController extends Controller
      */
     public function store(Request $request)
     {
-        //
+
+     $cekUser = User::count();
+
+    if ($cekUser >= 2) {
+        return redirect()->back()->with('error', 'Anda hanya diperbolehkan memiliki 1 akun penjualan. Silakan hubungi developer untuk menambahkan akun baru.');
+    }
+        $data = [
+            'name' => $request->input('name'),
+            'email'=> $request->input('email'),
+            'password' => Hash::make($request->password),
+            'outlet_id' => $request->input('outlet_id')
+
+        ];
+        User::create($data);
+        return redirect()->route('akunpenjualan')->with('success', 'Pendaftaran Akun Berhasil Ditambahkan');
     }
 
     /**

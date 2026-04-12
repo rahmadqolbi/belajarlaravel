@@ -153,8 +153,28 @@
             </button> --}}
 
             {{-- ================= RINGKASAN TOTAL ================= --}}
-            <div class="row justify-content-end">
-                <div class="col-md-4">
+            <div class="row">
+                <div class="col-md-6">
+                    @if($penjualan->status === 'DIBATALKAN')
+    <div class="col-md-10">
+        <div class="card shadow-sm border-danger">
+            <div class="card-header bg-danger text-white">
+                <strong>Alasan Pembatalan</strong>
+            </div>
+            <div class="card-body">
+                <p class="mb-0">{{ $penjualan->alasan_batal ?? '-' }}</p>
+                <hr>
+                <small class="text-muted">
+                    Dibatalkan pada: {{ \Carbon\Carbon::parse($penjualan->updated_at)->timezone('Asia/Jakarta')->translatedFormat('d F Y H:i') }}
+                </small>
+            </div>
+        </div>
+    </div>
+    @endif
+                </div>
+                <div class="col-md-6 ">
+                       <div class="row justify-content-end">
+                <div class="col-md-8">
 
                     <div class="card shadow-sm">
                         <div class="card-body">
@@ -165,11 +185,11 @@
     <input
     type="text"
     id="grandTotal"
-    class="form-control w-50 text-end fw-bold"
-     value="{{ old('total', $grandTotal) ? 'Rp '.number_format((int) old('total', $grandTotal),0,',','.') : '' }}"
-    readonly
->
-</div>
+            class="form-control w-50 text-end fw-bold"
+            value="{{ old('total', $grandTotal) ? 'Rp '.number_format((int) old('total', $grandTotal),0,',','.') : '' }}"
+            readonly
+                    >
+            </div>
 
                     <input type="hidden" name="total" id="totalHidden">
 
@@ -198,6 +218,12 @@
 
                 </div>
             </div>
+                </div>
+
+            </div>
+            <a href="{{ route('penjualan') }}" class="btn btn-dark">Kembali</a>
+
+
 
         </div>
     </div>

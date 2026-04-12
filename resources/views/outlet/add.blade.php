@@ -2,6 +2,9 @@
 
 @section('title', 'Tambah Outlet')
 @section('content')
+@if (session('error'))
+    <div class="alert alert-danger">{{ session('error') }}</div>
+@endif
                     <form action="{{ route('outlet') }}" method="POST">
                         @csrf
                         @method('post')

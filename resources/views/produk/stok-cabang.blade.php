@@ -22,6 +22,10 @@
                 <td>: <strong>{{ $produk->nama_barang }}</strong></td>
             </tr>
             <tr>
+                <td class="text-muted">Harga Modal</td>
+                <td>: <strong>Rp {{ number_format($produk->harga_modal, 0, ',', '.') }}</strong></td>
+            </tr>
+            <tr>
                 <td class="text-muted">Harga</td>
                 <td>: <strong>Rp {{ number_format($produk->harga, 0, ',', '.') }}</strong></td>
             </tr>

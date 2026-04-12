@@ -107,6 +107,8 @@ Route::get('/barangmasuk/{id}', [BarangMasukController::class, 'edit'])->name('b
 Route::put('/barangmasuk/{id}', [BarangMasukController::class, 'update'])->name('barangmasuk.update');
 Route::delete('/barangmasuk/{id}', [BarangMasukController::class, 'destroy'])->name('barangmasuk.destroy');
 });
+Route::patch('/barangmasuk/{id}/batal', [BarangMasukController::class, 'batal'])
+    ->name('barangmasuk.batal');
 Route::get('/barangmasukdetail', [BarangMasukDetailController::class, 'index'])->name('barangmasukdetail');
 
 
@@ -125,7 +127,12 @@ Route::post('/perpindahanstok', [PerpindahanStokController::class, 'store'])->na
 Route::get('/stok-outlet/{produkId}/{outletId}', [PerpindahanStokController::class, 'getStok'])->name('stok.outlet');
 Route::get('/riwayatperpindahanstok', [RiwayatPerpindahanStokController::class, 'index'])->name('riwayatperpindahanstok');
 
+Route::middleware(['auth', 'role:admin'])->group(function(){
 Route::get('/akunpenjualan', [AkunPenjualanController::class, 'index'])->name('akunpenjualan');
+});
+
+
+Route::post('/akunpenjualan', [AkunPenjualanController::class, 'store'])->name('akunpenjualan');
 
 require __DIR__.'/auth.php';
 

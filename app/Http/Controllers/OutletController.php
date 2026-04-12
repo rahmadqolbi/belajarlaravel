@@ -14,8 +14,11 @@ class OutletController extends Controller
      */
     public function index()
     {
+     $outletCount = Outlet::count();
+
+
         $data = Outlet::latest()->get();
-        return view('outlet.index', compact('data'));
+        return view('outlet.index', compact('data', 'outletCount'));
     }
 
     /**
@@ -31,6 +34,12 @@ class OutletController extends Controller
      */
     public function store(StoreOutletRequest $request)
     {
+
+    $cekOutlet = \App\Models\Outlet::count();
+
+    if ($cekOutlet >= 1) {
+        return redirect()->back()->with('error', 'Anda hanya diperbolehkan memiliki 1 outlet. Silakan hubungi developer untuk menambahkan outlet baru.');
+    }
        $data = ([
             'kode_outlet' => $request->input('kode_outlet'),
             'nama_outlet' => $request->input('nama_outlet'),

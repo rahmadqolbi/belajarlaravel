@@ -12,4 +12,9 @@ class StokOutlet extends Model
         'outlet_id',
         'stok',
     ];
+public function produk()
+{
+    return $this->belongsTo(ProdukModel::class, 'produk_id', 'id');
+}
+
 }

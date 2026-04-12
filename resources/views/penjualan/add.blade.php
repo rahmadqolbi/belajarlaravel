@@ -6,7 +6,9 @@
     @csrf
     @method('POST')
 
-
+@if(session('error'))
+    <div class="alert alert-danger">{{ session('error') }}</div>
+@endif
 <div class="container-fluid">
 
 
@@ -69,14 +71,14 @@
                 class="form-control product-select @error('produk_id.' . $index) is-invalid @enderror">
 
                 <option value="">-- Pilih Produk --</option>
-
-                @foreach ($produk as $pro)
-                    <option value="{{ $pro->id }}"
-                        data-harga="{{ $pro->harga }}"
-                        {{ $oldProduk == $pro->id ? 'selected' : '' }}>
-                        {{ $pro->nama_barang }}
-                    </option>
-                @endforeach
+          {{-- BARU --}}
+@foreach ($produk as $item)
+    <option value="{{ $item->produk->id }}"
+            data-harga="{{ $item->produk->harga }}"
+            data-stok="{{ $item->stok }}">
+     {{ $item->produk->nama_barang }} (Stok: {{ $item->stok }})
+    </option>
+@endforeach
             </select>
 
             @error('produk_id.' . $index)
@@ -290,13 +292,13 @@ $(document)
 
                             <option value="">-- Pilih Produk --</option>
 
-                            @foreach ($produk as $pro)
-                                <option value="{{ $pro->id }}"
-                                    data-harga="{{ $pro->harga }}"
-                                    {{ old('produk_id.0') == $pro->id ? 'selected' : '' }}>
-                                    {{ $pro->nama_barang }}
-                                </option>
-                            @endforeach
+                         @foreach ($produk as $item)
+    <option value="{{ $item->produk->id }}"
+            data-harga="{{ $item->produk->harga }}"
+            data-stok="{{ $item->stok }}">
+           {{ $item->produk->kode }} : {{ $item->produk->nama_barang }} (Stok: {{ $item->stok }})
+    </option>
+@endforeach
 
                         </select>
                         @error('produk_id')
@@ -348,7 +350,7 @@ $(document).ready(function(){
     $('.product-select').select2({
     theme: 'bootstrap4',
     width: '100%',
-    minimumInputLength: 1
+     minimumInputLength: 1
 });
 
 $(document).on('change', '.product-select', function(){

@@ -3,8 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Penjualan;
+use App\Models\PenjualanDetail;
 use App\Models\ProdukModel;
+use App\Models\StokOutlet;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
@@ -13,11 +16,22 @@ class DashboardController extends Controller
      */
     public function index()
     {
-        $totalPenjualan = Penjualan::sum('total');
+        $totalPenjualan = Penjualan::where('status', '!=', 'DIBATALKAN')->sum('total');
         $transaksiBerhasil = Penjualan::where('status', 'BERHASIL')->count();
         $totalProduk = ProdukModel::count('nama_barang');
          $stokMenipis = ProdukModel::where('stok', '<', 4)->sum('stok');
-        return view('dashboard.index', compact('totalPenjualan', 'transaksiBerhasil', 'totalProduk', 'stokMenipis'));
+
+// Ganti dengan ini — ambil dari stok_outlet
+$stokMenipis = StokOutlet::where('stok')
+    ->where('stok', '<', 4)
+    ->where('stok', '>', 0)
+    ->count();
+$totalProfit = PenjualanDetail::join('produk', 'penjualan_detail.produk_id', '=', 'produk.id')
+    ->join('penjualan', 'penjualan_detail.penjualan_id', '=', 'penjualan.id')
+    ->where('penjualan.status', '!=', 'batal')
+    ->sum(DB::raw('(penjualan_detail.harga - produk.harga_modal) * penjualan_detail.qty'));
+
+        return view('dashboard.index', compact('totalPenjualan', 'transaksiBerhasil', 'totalProduk', 'stokMenipis', 'totalProfit'));
     }
 
     /**

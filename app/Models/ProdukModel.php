@@ -12,18 +12,23 @@ class ProdukModel extends Model
         "kode",
         "nama_barang",
         "deskripsi",
-        "stok",
         "harga",
+        "harga_modal"
     ];
-    public function produk()
-{
-    return $this->belongsTo(ProdukModel::class);
-}
+//     public function produk()
+// {
+//     return $this->belongsTo(ProdukModel::class);
+// }
 protected $casts = [
     'created_at' => 'datetime',
     'updated_at' => 'datetime',
 ];
 
+
+  public function produk()
+{
+    return $this->belongsTo(ProdukModel::class, 'produk_id', 'id');
+}
     //  public function kategori()
     // {
     //     return $this->belongsTo(Kategori::class, 'kategori_id');

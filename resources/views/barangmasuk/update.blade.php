@@ -130,16 +130,16 @@
 
     </select>
 </td>
-
+@php $isApproved = $data->status === 'APPROVED'; @endphp
 
     <td style="width:110px;">
 
-    <input type="number" class="form-control text-end qty" name="qty[]" value="{{ $det['qty'] }}">
+    <input type="number" class="form-control text-end qty" name="qty[]" value="{{ $det['qty'] }}"   {{ $isApproved ? 'readonly' : '' }}>
 
 </td>
     <td>
         <input type="number"
-            class="form-control text-end harga" name="harga[]" value="{{ $det['harga'] }}">
+            class="form-control text-end harga" name="harga[]" value="{{ $det['harga'] }}"   {{ $isApproved ? 'readonly' : '' }}>
     </td>
     <td>
      <input type="text" class="form-control text-end bg-light total" name="total[]" readonly>
@@ -162,12 +162,14 @@
                     class="btn btn-outline-primary btn-sm" id="add">
                     + Tambah Baris
                 </button>
-                <button type="submit"
-    class="btn btn-success">
-    Edit Transaksi
-</button>
+             @if($data->status !== 'APPROVED')
+    <button type="submit" class="btn btn-success">
+        Edit Transaksi
+    </button>
+@endif
 
             </div>
+<a href="{{ route('barangmasuk') }}" class="btn btn-dark mt-3">Kembali</a>
 
         </div>
 

@@ -48,7 +48,15 @@
 
     </tbody>
 </table>
-<a href="{{ route('outlet.add') }}" class="btn btn-primary mb-3">Tambah</a>
+@if($outletCount >= 1)
+    <button class="btn btn-secondary" disabled>
+        Maksimal 1 Outlet (Hubungi Developer)
+    </button>
+@else
+    <a href="{{ route('outlet.add') }}" class="btn btn-primary mb-3">
+        Tambah Outlet
+    </a>
+@endif
 
 
 

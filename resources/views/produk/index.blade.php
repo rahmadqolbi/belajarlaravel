@@ -36,6 +36,7 @@
                     <th>Nama Barang</th>
                     <th>Kategori</th>
                     <th>Stok (Semua Outlet)</th>
+                    <th>Harga Modal</th>
                     <th>Harga</th>
                     <th>Dibuat</th>
                     <th>Aksi</th>
@@ -45,7 +46,7 @@
                 @foreach ($data as $list)
                     @php
                         $stok = $stokGlobal[$list->id] ?? 0;
-                        $badgeClass = $stok > 10 ? 'success' : ($stok > 0 ? 'warning' : 'danger');
+                        $badgeClass = $stok > 0 ? 'success' : ($stok > 2 ? 'success' : 'danger');
                     @endphp
                     <tr>
                         <td>{{ $data->firstItem() + $loop->index . '.' }}</td>
@@ -57,6 +58,7 @@
                                 {{ $stok }} pcs
                             </span>
                         </td>
+                         <td>{{ 'Rp ' . number_format($list->harga_modal, 0, ',', '.') }}</td>
                         <td>{{ 'Rp ' . number_format($list->harga, 0, ',', '.') }}</td>
                         <td>{{ $list->created_at->timezone('Asia/Jakarta')->translatedFormat('d F Y H:i') }}</td>
                         <td>

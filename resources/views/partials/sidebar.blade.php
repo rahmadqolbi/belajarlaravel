@@ -12,7 +12,7 @@
             <hr class="sidebar-divider my-0">
 
             <!-- Nav Item - Dashboard -->
-            <li class="nav-item {{ request()->routeIs('kategori') ? 'active' : '' }}">
+            <li class="nav-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
                 <a class="nav-link" href="{{ route('dashboard') }}">
                     <i class="fas fa-fw fa-tachometer-alt"></i>
                     <span>Dashboard</span></a>
@@ -44,40 +44,42 @@
         <span>Produk</span>
     </a>
 </li>
-
+@if(auth()->user()->role == 'admin')
 <li class="nav-item {{ request()->routeIs('supplier') ? 'active' : '' }}">
     <a class="nav-link" href="{{ route('supplier') }}">
         <i class="fas fa-fw fa-table"></i>
         <span>Supplier</span>
     </a>
 </li>
-
+@endif
 {{-- <li class="nav-item {{ request()->routeIs('gudang') ? 'active' : '' }}">
     <a class="nav-link" href="{{ route('gudang') }}">
         <i class="fas fa-fw fa-table"></i>
         <span>Gudang</span>
     </a>
 </li> --}}
-
+@if(auth()->user()->role == 'admin')
 <li class="nav-item {{ request()->routeIs('outlet') ? 'active' : '' }}">
     <a class="nav-link" href="{{ route('outlet') }}">
         <i class="fas fa-fw fa-table"></i>
         <span>Outlet</span>
     </a>
 </li>
-
+@endif
+@if(auth()->user()->role == 'admin')
 <li class="nav-item {{ request()->routeIs('barangmasuk') ? 'active' : '' }}">
     <a class="nav-link" href="{{ route('barangmasuk') }}">
         <i class="fas fa-fw fa-table"></i>
         <span>Barang Masuk</span>
     </a>
 </li>
-<li class="nav-item {{ request()->routeIs('perpindahanstok') ? 'active' : '' }}">
+@endif
+{{-- <li class="nav-item {{ request()->routeIs('perpindahanstok') ? 'active' : '' }}">
     <a class="nav-link" href="{{ route('perpindahanstok') }}">
         <i class="fas fa-fw fa-table"></i>
         <span>Perpindahan Stok</span>
     </a>
-</li>
+</li> --}}
 
 <li class="nav-item {{ request()->routeIs('penjualan') ? 'active' : '' }}">
     <a class="nav-link" href="{{ route('penjualan') }}">
@@ -85,12 +87,14 @@
         <span>Penjualan</span>
     </a>
 </li>
+@if(auth()->user()->role == 'admin')
 <li class="nav-item {{ request()->routeIs('akunpenjualan') ? 'active' : '' }}">
     <a class="nav-link" href="{{ route('akunpenjualan') }}">
         <i class="fas fa-fw fa-table"></i>
         <span>Kelola Akun Penjualan</span>
     </a>
 </li>
+@endif
 
             <!-- Divider -->
             <hr class="sidebar-divider d-none d-md-block">

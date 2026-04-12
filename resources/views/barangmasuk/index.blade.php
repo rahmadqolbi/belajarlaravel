@@ -9,6 +9,10 @@
 <div class="alert alert-danger">{{ session('destroy') }}</div>
 
 @endif
+@if(session('error'))
+<div class="alert alert-danger">{{ session('error') }}</div>
+
+@endif
 
 
 <table class="table table-bordered">
@@ -50,13 +54,13 @@
 
                     </td>
             <td>
-                <a href="{{ route('barangmasuk.show', $list->id) }}" class="btn btn-sm btn-info">Show</a>
+                {{-- <a href="{{ route('barangmasuk.show', $list->id) }}" class="btn btn-sm btn-info">Show</a> --}}
                 <a href="{{ route('barangmasuk.update', $list->id) }}" class="btn btn-sm btn-primary">Edit</a>
-                <form action="{{ route('barangmasuk.destroy', $list->id) }}" method="POST" class="d-inline" onsubmit="return(confirm('Yakin Ingin Hapus Data ?'))">
+                {{-- <form action="{{ route('barangmasuk.destroy', $list->id) }}" method="POST" class="d-inline" onsubmit="return(confirm('Yakin Ingin Hapus Data ?'))">
                     @csrf
                     @method('delete')
                     <button type="submit" class="btn btn-sm btn-danger">Delete</button>
-                </form>
+                </form> --}}
             </td>
         </tr>
             @endforeach

@@ -59,7 +59,16 @@
                         <div class="text-danger mt-1">{{ $message }}</div>
                     @enderror
                     </div>
+                    <div class="col-md-4 mt-3">
 
+                         <label for="harga_modal" class="form-label ">Harga Modal</label>
+                        <input type="number" class="form-control @error('harga_modal') is-invalid @enderror" id="harga_modal" value="{{ $data->harga_modal }}" name="harga_modal"  />
+                        <small class="text-muted">Wajib Diisi</small>
+                         @error('harga_modal')
+                        {{-- <div class="alert alert-danger w-50">{{ $message }}</div> --}}
+                        <div class="text-danger mt-1">{{ $message }}</div>
+                    @enderror
+                    </div>
                       <div class="col-md-4 mt-3">
                         <label for="harga" class="form-label">Harga</label>
                         <input type="number" class="form-control @error('harga') is-invalid @enderror" id="harga" value="{{ $data->harga }}" name="harga"  />

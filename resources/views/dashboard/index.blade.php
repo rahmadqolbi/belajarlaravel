@@ -73,6 +73,7 @@
         <div class="card inv-card inv-card-blue h-100">
             <div class="card-body">
                 <div class="d-flex align-items-start justify-content-between">
+
                     <div>
                         <div class="inv-label text-success">Total Penjualan</div>
                         <div class="inv-value ">Rp {{ number_format($totalPenjualan ?? 0, 0, ',', '.') }}</div>
@@ -84,6 +85,34 @@
                             @endif
                         </div> --}}
                     </div>
+
+                    <div class="inv-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                </div>
+                <div class="inv-bar">
+                    <div class="inv-bar-fill" style="width: 72%"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+      <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card inv-card inv-card-blue h-100">
+            <div class="card-body">
+                <div class="d-flex align-items-start justify-content-between">
+
+                    <div>
+                        <div class="inv-label text-success">Total Profit</div>
+                        <div class="inv-value">Rp {{ number_format($totalProfit ?? 0, 0, ',', '.') }}</div>
+                        {{-- <div class="inv-sub">
+                            @if(($pctPenjualan ?? 0) >= 0)
+                                ▲ {{ abs($pctPenjualan ?? 0) }}% dari bulan lalu
+                            @else
+                                ▼ {{ abs($pctPenjualan ?? 0) }}% dari bulan lalu
+                            @endif
+                        </div> --}}
+                    </div>
+
                     <div class="inv-icon">
                         <i class="fas fa-chart-line"></i>
                     </div>

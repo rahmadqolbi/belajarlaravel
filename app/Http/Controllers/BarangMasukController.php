@@ -47,63 +47,53 @@ class BarangMasukController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-   public function store(StoreBarangMasukRequest $request)
+  public function store(StoreBarangMasukRequest $request)
 {
-  try {
+    try {
+        DB::transaction(function () use ($request) {
 
-    DB::transaction(function () use ($request) {
+            [$type, $tujuanId] = explode('-', $request->tujuan_type);
+            $type = strtolower($type);
 
-        [$type, $tujuanId] = explode('-', $request->tujuan_type);
-        $type = strtolower($type);
+            $tujuan = match($type) {
+                'gudang' => Gudang::findOrFail($tujuanId),
+                'outlet' => Outlet::findOrFail($tujuanId)
+            };
 
-        $tujuan = match($type) {
-            'gudang' => Gudang::findOrFail($tujuanId),
-            'outlet' => Outlet::findOrFail($tujuanId)
-        };
+            // Status DRAFT — stok belum masuk
+            $barangMasuk = BarangMasuk::create([
+                'tanggal'     => $request->tanggal,
+                'supplier_id' => $request->supplier_id,
+                'no_dokumen'  => $request->no_dokumen,
+                'keterangan'  => $request->keterangan,
+                'status'      => 'DRAFT', // ← selalu DRAFT saat pertama input
+            ]);
 
-        $barangMasuk = BarangMasuk::create([
-            'tanggal'     => $request->tanggal,
-            'supplier_id' => $request->supplier_id,
-            'no_dokumen'  => $request->no_dokumen,
-            'keterangan'  => $request->keterangan,
-        ]);
+            foreach ($request->barang_id as $i => $barangId) {
 
-        foreach ($request->barang_id as $i => $barangId) {
+                $qty        = $request->qty[$i];
+                $hargaInput = $request->harga[$i];
 
-            $qty = $request->qty[$i];
-            $hargaInput = $request->harga[$i];
-
-            $produk = ProdukModel::find($barangId);
-
-            // 🚨 VALIDASI UTAMA
-            if ($hargaInput > $produk->harga) {
-                throw new \Exception('Harga modal tidak boleh lebih besar dari harga jual');
+                BarangMasukDetail::create([
+                    'barang_masuk_id' => $barangMasuk->id,
+                    'barang_id'       => $barangId,
+                    'qty'             => $qty,
+                    'harga'           => $hargaInput,
+                ]);
             }
 
-            BarangMasukDetail::create([
-                'barang_masuk_id' => $barangMasuk->id,
-                'barang_id'       => $barangId,
-                'qty'             => $qty,
-                'harga'           => $hargaInput,
-            ]);
-        }
+            $barangMasuk->tujuan()->associate($tujuan);
+            $barangMasuk->save();
+        });
 
-        $barangMasuk->tujuan()->associate($tujuan);
-        $barangMasuk->save();
-    });
+        return redirect()->route('barangmasuk')
+            ->with('success', 'Data berhasil ditambahkan, menunggu approval');
 
-    return redirect()->route('barangmasuk')
-        ->with('success', 'Data berhasil ditambahkan');
-
-} catch (\Exception $e) {
-    return redirect()->back()->with('error', $e->getMessage());
-}
+    } catch (\Exception $e) {
+        return redirect()->back()->with('error', $e->getMessage());
+    }
 }
 
-
-    /**
-     * Display the specified resource.
-     */
     public function show(string $id)
 {
     $detail = BarangMasukDetail::where('barang_masuk_id', $id)->get();
@@ -117,9 +107,6 @@ class BarangMasukController extends Controller
         'produk'  => ProdukModel::all(),
 
     ]);
-
-
-
 }
 
     public function edit(string $id)
@@ -188,10 +175,10 @@ class BarangMasukController extends Controller
 
     // Ambil detail baru setelah simpan
     $details = BarangMasukDetail::where('barang_masuk_id', $data->id)->get();
-    // =============================
-    // 5. Tambah stok jika status berubah DRAFT -> APPROVED
-    // =============================
- if ($oldStatus == 'DRAFT' && $request->status == 'APPROVED') {
+// =============================
+// 5. Tambah stok + update harga modal jika DRAFT -> APPROVED
+// =============================
+if ($oldStatus == 'DRAFT' && $request->status == 'APPROVED') {
 
     [$type, $tujuanId] = explode('-', $request->tujuan_type);
     $type = strtolower($type);
@@ -199,6 +186,12 @@ class BarangMasukController extends Controller
     if ($type === 'outlet') {
         foreach ($details as $detail) {
 
+            // Update harga modal produk
+            ProdukModel::where('id', $detail->barang_id)->update([
+                'harga_modal' => $detail->harga,
+            ]);
+
+            // Update stok outlet
             $stokAda = DB::table('stok_outlet')
                 ->where('produk_id', $detail->barang_id)
                 ->where('outlet_id', $tujuanId)
@@ -224,9 +217,6 @@ class BarangMasukController extends Controller
         }
     }
 }
-
-
-
     return redirect()
         ->route('barangmasuk')
         ->with('success', 'Data Berhasil Di Edit');
@@ -239,9 +229,24 @@ class BarangMasukController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
-    {
-        BarangMasuk::where('id', $id)->delete();
-        return redirect()->route('barangmasuk')->with('destroy', 'Data Berhasil Di Hapus');
-    }
+//     public function destroy(string $id)
+// {
+//     $barangMasuk = BarangMasuk::with('details')->findOrFail($id);
+
+//     // APPROVED tidak boleh dihapus
+//     if ($barangMasuk->status === 'APPROVED') {
+//         return redirect()->route('barangmasuk')
+//             ->with('error', 'Data yang sudah diapproved tidak bisa dihapus! Gunakan fitur batalkan.');
+//     }
+
+//     // DRAFT boleh dihapus langsung
+//     $barangMasuk->details()->delete(); // hapus detail dulu
+//     $barangMasuk->delete();            // baru hapus header
+
+//     return redirect()->route('barangmasuk')
+//         ->with('destroy', 'Data Berhasil Di Hapus');
+// }
+
+
+
 }

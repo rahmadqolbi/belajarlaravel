@@ -47,40 +47,42 @@ class ProdukController extends Controller
      * Show the form for creating a new resource.
      */
     public function create()
-    {
-        $data = Kategori::all();
-         $lastKode = ProdukModel::max('kode');
+{
+    $data = Kategori::all();
+    $outlets = Outlet::all(); // ← tambahkan ini
 
-        $nextkode = $lastKode
+    $lastKode = ProdukModel::max('kode');
+    $nextkode = $lastKode
         ? 'BRGFNXA' . str_pad((int) substr($lastKode, -2) + 1, 2, '0', STR_PAD_LEFT)
         : 'BRGFNXA01';
 
-        return view('produk.add',compact('data', 'nextkode'));
-    }
+    return view('produk.add', compact('data', 'nextkode', 'outlets')); // ← tambah 'outlets'
+}
 
     /**
      * Store a newly created resource in storage.
      */
     public function store(StoreProdukRequest $request)
-    {
+{
+    $produk = ProdukModel::create([
+        'kategori_id' => $request->input('kategori_id'),
+        'kode'        => $request->input('kode'),
+        'nama_barang' => $request->input('nama_barang'),
+        'harga'       => $request->input('harga'),
+        'harga_modal'       => $request->input('harga_modal'),
+    ]);
 
-    //  $lastKode = ProdukModel::max('kode');
-
-        // $nextKode = $lastKode
-        // ? 'AAA' . str_pad((int)substr($lastKode, -2) + 1, 2, '0', STR_PAD_LEFT)
-        // : 'AAA01';
-        $data = [
-            'kategori_id' => $request->input('kategori_id'),
-            // 'kode' => $nextKode,
-            'kode' => $request->input('kode'),
-            'nama_barang' => $request->input('nama_barang'),
-            'stok' => $request->stok ?? 0,
-            'harga' => $request->input('harga'),
-        ];
-
-        ProdukModel::create($data);
-        return redirect()->route('produk')->with('success', 'Produk Berhasil Ditambahkan');
+    // Simpan stok awal ke stok_outlet jika ada
+    if ($request->stok && $request->outlet_id) {
+        StokOutlet::create([
+            'produk_id' => $produk->id,
+            'outlet_id' => $request->outlet_id,
+            'stok'      => $request->stok,
+        ]);
     }
+
+    return redirect()->route('produk')->with('success', 'Produk Berhasil Ditambahkan');
+}
 
     /**
      * Display the specified resource.
@@ -111,8 +113,8 @@ class ProdukController extends Controller
                'kategori_id' => $request->input('kategori_id'),
             'kode' => $request->input('kode'),
             'nama_barang' => $request->input('nama_barang'),
-           'stok' => $request->stok ?? 0,
             'harga' => $request->input('harga'),
+            'harga_modal' => $request->input('harga_modal'),
         ];
         ProdukModel::where('id', $id)->update($data);
         return redirect()->route('produk')->with('success', 'Data Berhasil Di Edit');
