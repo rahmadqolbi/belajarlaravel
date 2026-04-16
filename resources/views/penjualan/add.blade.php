@@ -2,6 +2,9 @@
 @section('title', 'Form Penjualan')
 
 @section('content')
+<style>
+
+</style>
 <form action="{{ route('penjualan') }}" method="POST">
     @csrf
     @method('POST')
@@ -494,7 +497,7 @@ $('form').on('submit', function(e){
     }
 
     // ❌ pembayaran kosong
-    if(dibayar <= 0){
+    if(dibayar <= 1){
         e.preventDefault();
         alert("Pembayaran belum diisi!");
         return;

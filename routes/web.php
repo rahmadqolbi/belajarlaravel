@@ -12,6 +12,7 @@ use App\Http\Controllers\Halo\HaloController;
 use App\Http\Controllers\KategoriController;
 use App\Http\Controllers\OutletController;
 use App\Http\Controllers\PenjualanController;
+use App\Http\Controllers\PenyesuaianStokController;
 use App\Http\Controllers\PerpindahanStokController;
 use App\Http\Controllers\ProdukController;
 use App\Http\Controllers\RiwayatPerpindahanStokController;
@@ -110,6 +111,11 @@ Route::delete('/barangmasuk/{id}', [BarangMasukController::class, 'destroy'])->n
 Route::patch('/barangmasuk/{id}/batal', [BarangMasukController::class, 'batal'])
     ->name('barangmasuk.batal');
 Route::get('/barangmasukdetail', [BarangMasukDetailController::class, 'index'])->name('barangmasukdetail');
+
+
+Route::get('/penyesuaianstok', [PenyesuaianStokController::class, 'index'])->name('penyesuaianstok');
+Route::get('/penyesuaianstok/create', [PenyesuaianStokController::class, 'create'])->name('penyesuaianstok.create');
+Route::post('/penyesuaianstok', [PenyesuaianStokController::class, 'store'])->name('penyesuaianstok.add');
 
 
 Route::get('/penjualan/export-pdf', [PenjualanController::class, 'exportPdf'])->name('penjualan.export.pdf');
